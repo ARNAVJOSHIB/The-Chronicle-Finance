@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+@import "tailwindcss";
+@import "@fontsource/playfair-display/400.css";
+@import "@fontsource/playfair-display/700.css";
+@import "@fontsource/playfair-display/900.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/ibm-plex-serif/400.css";
+@import "@fontsource/libre-baskerville/400.css";
+@import "@fontsource/source-sans-pro/400.css";
+@import "@fontsource/source-sans-pro/600.css";
+
+:root {
+  /* Vintage Editorial Paper Theme with Quiet Luxury Elements */
+  --background: #F3F1EB; /* Warmer institutional paper tone */
+  --foreground: #1A1C20;
+  --financial-blue: #081B33; /* Deep Analytical Blue */
+  --financial-blue-light: #142E4A;
+  --gold: #D4AF37;
+  --gold-accent: #C5A028;
+  --dark-charcoal: #111111;
+  --bronze: #8B7355;
+  --deep-green: #0A3D16;
+  --cyan-glow: #00E5FF;
+  --emerald-pulse: #059669;
+  --amber-volatility: #D97706; /* Muted Volatility Amber */
+  --surface: #FFFFFF;
+  --surface-muted: #EBE8E3;
+  --border: #1A1C20;
+  --border-soft: #D1CEC5;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ivory: var(--background);
+  --color-financial-blue: var(--financial-blue);
+  --color-financial-blue-light: var(--financial-blue-light);
+  --color-gold: var(--gold);
+  --color-gold-accent: var(--gold-accent);
+  --color-dark-charcoal: var(--dark-charcoal);
+  --color-bronze: var(--bronze);
+  --color-deep-green: var(--deep-green);
+  --color-cyan-glow: var(--cyan-glow);
+  --color-emerald-pulse: var(--emerald-pulse);
+  --color-amber-volatility: var(--amber-volatility);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border-soft: var(--border-soft);
+  --font-sans: "Inter", ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --font-playfair: "Playfair Display", ui-serif, Georgia, serif;
+  --font-libre: "Libre Baskerville", ui-serif, Georgia, serif;
+  --font-ibm: "IBM Plex Serif", ui-serif, Georgia, serif;
+  --font-inter: "Inter", ui-sans-serif, sans-serif;
+  --font-source: "Source Sans Pro", ui-sans-serif, sans-serif;
+  --font-oldenglish: "UnifrakturMaguntia", serif;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: "Libre Baskerville", ui-serif, Georgia, serif;
+    color: var(--foreground);
+    background-color: var(--background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Playfair Display", ui-serif, Georgia, serif;
+    color: var(--foreground);
+  }
+
+  /* ── Font utility classes ── */
+  .font-playfair   { font-family: "Playfair Display", ui-serif, Georgia, serif; }
+  .font-libre      { font-family: "Libre Baskerville", ui-serif, Georgia, serif; }
+  .font-ibm        { font-family: "IBM Plex Serif", ui-serif, Georgia, serif; }
+  .font-inter      { font-family: "Inter", ui-sans-serif, sans-serif; }
+  .font-source     { font-family: "Source Sans Pro", ui-sans-serif, sans-serif; }
+  .font-oldenglish { font-family: "UnifrakturMaguntia", serif; }
+
+  /* ── Background utilities ── */
+  .bg-ivory          { background-color: var(--background); }
+  .bg-financial-blue { background-color: var(--financial-blue); }
+  .bg-gold           { background-color: var(--gold); }
+  .bg-gold-accent    { background-color: var(--gold-accent); }
+  .bg-surface        { background-color: var(--surface); }
+  .bg-surface-muted  { background-color: var(--surface-muted); }
+
+  /* ── Text utilities ── */
+  .text-ivory            { color: var(--background); }
+  .text-financial-blue   { color: var(--financial-blue); }
+  .text-gold             { color: var(--gold); }
+  .text-gold-accent      { color: var(--gold-accent); }
+  .text-dark-charcoal    { color: var(--dark-charcoal); }
+  .text-bronze           { color: var(--bronze); }
+  .text-deep-green       { color: var(--deep-green); }
+  .text-cyan-glow        { color: var(--cyan-glow); }
+  .text-amber-volatility { color: var(--amber-volatility); }
+  .text-emerald-pulse    { color: var(--emerald-pulse); }
+
+  /* ── Editorial Border utilities ── */
+  .border-financial-blue { border-color: var(--financial-blue); }
+  .border-gold           { border-color: var(--gold); }
+  .border-soft           { border-color: var(--border-soft); }
+  .border-news-hairline  { border-color: var(--border); border-width: 1px; }
+  .border-y-news-double  { border-top: 3px double var(--border); border-bottom: 3px double var(--border); }
+  .border-t-news-double  { border-top: 3px double var(--border); }
+  .border-b-news-double  { border-bottom: 3px double var(--border); }
+  .border-news-thick     { border-color: var(--border); border-width: 4px; }
+  .border-t-news-thick   { border-top: 4px solid var(--border); }
+  .border-b-news-thick   { border-bottom: 4px solid var(--border); }
+
+  /* ── Ring utilities ── */
+  .focus\:ring-gold:focus { --tw-ring-color: var(--gold); }
+  .focus\:border-gold:focus { border-color: var(--gold); }
+
+  /* ── Editorial Button effects ── */
+  .editorial-button {
+    background: linear-gradient(135deg, #D4AF37 0%, #C5A028 100%);
+    color: #1A1C20;
+    border: 1px solid #1A1C20;
+    box-shadow: 2px 2px 0px #1A1C20;
+    transition: all 0.2s ease;
+  }
+  .editorial-button:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #1A1C20;
+  }
+  .editorial-button:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #1A1C20;
+  }
+  
+  .editorial-panel {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+  }
+
+  .editorial-shadow {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02);
+  }
+
+  @keyframes grain-drift {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-1%, -1%); }
+    20% { transform: translate(-2%, 1%); }
+    30% { transform: translate(1%, -2%); }
+    40% { transform: translate(-1%, 2%); }
+    50% { transform: translate(-2%, 1%); }
+    60% { transform: translate(2%, 0%); }
+    70% { transform: translate(0%, 1%); }
+    80% { transform: translate(1%, 2%); }
+    90% { transform: translate(-1%, 1%); }
+  }
+
+  .bg-texture {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.035;
+    pointer-events: none;
+    z-index: 9999;
+    animation: grain-drift 8s steps(10) infinite;
+  }
+}

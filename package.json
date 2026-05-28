@@ -1,0 +1,34 @@
+{
+  "name": "chronicle-finance",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node start.js",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-serif": "^5.2.7",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/libre-baskerville": "^5.2.10",
+    "@fontsource/playfair-display": "^5.2.8",
+    "@fontsource/source-sans-pro": "^5.2.5",
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
+    "framer-motion": "^12.38.0",
+    "next": "16.2.5",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
