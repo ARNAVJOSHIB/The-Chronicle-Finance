@@ -44,10 +44,10 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
     <div className="w-full">
       <div className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] font-inter text-dark-charcoal mb-1">Quantitative Simulation Lab</p>
+          <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Quantitative Simulation Lab</p>
           <h3 className="text-2xl font-black font-playfair text-foreground capitalize">Stochastic Path Cloud</h3>
         </div>
-        <div className="text-[10px] font-inter tracking-widest font-bold uppercase text-dark-charcoal text-right">
+        <div className="text-[10px] font-inter tracking-widest font-bold  text-dark-charcoal text-right">
           <div>{allPaths.length} Generated Paths</div>
           <div className="text-dark-charcoal/50">Displaying sample of {pathsToRender.length}</div>
         </div>

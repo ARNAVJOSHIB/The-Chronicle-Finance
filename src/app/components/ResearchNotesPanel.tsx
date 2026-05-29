@@ -45,14 +45,14 @@ export default function ResearchNotesPanel() {
       <div className="editorial-panel p-6 md:p-8 bg-ivory border border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]">
         <div className="flex items-end justify-between border-b border-black/20 pb-4 mb-6">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-dark-charcoal font-inter mb-1">
+            <p className="text-[10px] font-bold  tracking-[0.25em] text-dark-charcoal font-inter mb-1">
               Experimentation Log
             </p>
             <h2 className="text-2xl font-black font-playfair tracking-tight text-foreground capitalize">
               Research Notes
             </h2>
           </div>
-          <div className="text-[10px] font-inter uppercase font-bold text-dark-charcoal/60">
+          <div className="text-[10px] font-inter  font-bold text-dark-charcoal/60">
             SIM ID: {simulationId || 'N/A'}
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function ResearchNotesPanel() {
           <button
             onClick={handleSave}
             disabled={isSaving || !notes.trim() || !simulationId}
-            className="px-6 py-2 border border-black text-xs font-bold font-inter tracking-widest uppercase transition-all duration-300 hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-black"
+            className="px-6 py-2 border border-black text-xs font-bold font-inter tracking-widest  transition-all duration-300 hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-black"
           >
             {isSaving ? 'Saving...' : 'Save Notes'}
           </button>

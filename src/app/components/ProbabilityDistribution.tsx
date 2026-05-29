@@ -82,10 +82,10 @@ export default function ProbabilityDistribution({ results }: { results: any }) {
     <div className="w-full mt-8">
       <div className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] font-inter text-dark-charcoal mb-1">Statistical Analytics Layer</p>
-          <h3 className="text-2xl font-black font-playfair text-foreground uppercase">Terminal Probability Density</h3>
+          <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Statistical Analytics Layer</p>
+          <h3 className="text-2xl font-black font-playfair text-foreground ">Terminal Probability Density</h3>
         </div>
-        <div className="text-[10px] font-inter tracking-widest font-bold uppercase text-dark-charcoal text-right">
+        <div className="text-[10px] font-inter tracking-widest font-bold  text-dark-charcoal text-right">
           <div><span className="text-financial-blue-light font-black">&mu;</span> {formatCurrency(mean)}</div>
           <div><span className="text-amber-volatility font-black">&sigma;</span> {formatCurrency(stdDev)}</div>
         </div>

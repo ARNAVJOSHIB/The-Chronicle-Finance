@@ -25,8 +25,20 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Protect archive and insights pages — require login
-  const protectedPaths = ['/archive', '/insights']
+  // Protect archive, insights, and all simulation models
+  const protectedPaths = [
+    '/archive', 
+    '/insights',
+    '/geometric-brownian-motion',
+    '/monte-carlo',
+    '/volatility-lab',
+    '/value-at-risk',
+    '/stress-testing',
+    '/correlation-matrix',
+    '/discounted-cash-flow',
+    '/compound-interest',
+    '/portfolio-optimization'
+  ]
   const isProtected = protectedPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   )
@@ -42,5 +54,17 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/archive/:path*', '/insights/:path*'],
+  matcher: [
+    '/archive/:path*', 
+    '/insights/:path*',
+    '/geometric-brownian-motion/:path*',
+    '/monte-carlo/:path*',
+    '/volatility-lab/:path*',
+    '/value-at-risk/:path*',
+    '/stress-testing/:path*',
+    '/correlation-matrix/:path*',
+    '/discounted-cash-flow/:path*',
+    '/compound-interest/:path*',
+    '/portfolio-optimization/:path*'
+  ],
 }

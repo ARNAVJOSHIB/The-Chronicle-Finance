@@ -59,7 +59,7 @@ export default function ModelSelector() {
   return (
     <div className="max-w-4xl mx-auto w-full px-4 mb-6 mt-2 border-b-news-thick pb-6">
       <div className="text-center mb-5 border-b border-black pb-2">
-        <h2 className="text-xs font-bold uppercase tracking-[0.25em] text-dark-charcoal font-inter">
+        <h2 className="text-xs font-bold  tracking-[0.25em] text-dark-charcoal font-inter">
           Select Simulation Model
         </h2>
       </div>

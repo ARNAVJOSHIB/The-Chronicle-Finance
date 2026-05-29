@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 @import "tailwindcss";
 @import "@fontsource/playfair-display/400.css";
 @import "@fontsource/playfair-display/700.css";
@@ -13,49 +14,42 @@
 @import "@fontsource/source-sans-pro/600.css";
 
 :root {
-  /* Vintage Editorial Paper Theme with Quiet Luxury Elements */
-  --background: #F3F1EB; /* Warmer institutional paper tone */
-  --foreground: #1A1C20;
-  --financial-blue: #081B33; /* Deep Analytical Blue */
-  --financial-blue-light: #142E4A;
-  --gold: #D4AF37;
-  --gold-accent: #C5A028;
-  --dark-charcoal: #111111;
-  --bronze: #8B7355;
-  --deep-green: #0A3D16;
-  --cyan-glow: #00E5FF;
-  --emerald-pulse: #059669;
-  --amber-volatility: #D97706; /* Muted Volatility Amber */
+  /* The Chronicle Finance Brand Kit */
+  --background: #F5F3EE; /* Parchment */
+  --foreground: #0B1320; /* Ink */
+  
+  --ink: #0B1320;
+  --parchment: #F5F3EE;
+  --steel: #6B7280;
+  --midnight: #1E2A3A;
+  --ledger-gold: #CDAA3D;
+  --data-green: #1FA37A;
+  
   --surface: #FFFFFF;
   --surface-muted: #EBE8E3;
-  --border: #1A1C20;
-  --border-soft: #D1CEC5;
+  --border: #0B1320; /* Ink */
+  --border-soft: #6B7280; /* Steel */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-ivory: var(--background);
-  --color-financial-blue: var(--financial-blue);
-  --color-financial-blue-light: var(--financial-blue-light);
-  --color-gold: var(--gold);
-  --color-gold-accent: var(--gold-accent);
-  --color-dark-charcoal: var(--dark-charcoal);
-  --color-bronze: var(--bronze);
-  --color-deep-green: var(--deep-green);
-  --color-cyan-glow: var(--cyan-glow);
-  --color-emerald-pulse: var(--emerald-pulse);
-  --color-amber-volatility: var(--amber-volatility);
+  --color-ink: var(--ink);
+  --color-parchment: var(--parchment);
+  --color-steel: var(--steel);
+  --color-midnight: var(--midnight);
+  --color-ledger-gold: var(--ledger-gold);
+  --color-data-green: var(--data-green);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
   --color-border-soft: var(--border-soft);
+
   --font-sans: "Inter", ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, monospace;
-  --font-playfair: "Playfair Display", ui-serif, Georgia, serif;
-  --font-libre: "Libre Baskerville", ui-serif, Georgia, serif;
-  --font-ibm: "IBM Plex Serif", ui-serif, Georgia, serif;
-  --font-inter: "Inter", ui-sans-serif, sans-serif;
-  --font-source: "Source Sans Pro", ui-sans-serif, sans-serif;
+  --font-display: "UnifrakturMaguntia", serif; /* Archive Black equivalent per user request */
+  --font-heading: "Special Elite", monospace; /* Headings */
+  --font-ui: "Inter", ui-sans-serif, sans-serif; /* Editorial Sans equivalent */
   --font-oldenglish: "UnifrakturMaguntia", serif;
 }
 
@@ -65,7 +59,7 @@
   }
 
   html {
-    font-family: "Libre Baskerville", ui-serif, Georgia, serif;
+    font-family: var(--font-ui);
     color: var(--foreground);
     background-color: var(--background);
     -webkit-font-smoothing: antialiased;
@@ -77,41 +71,38 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Playfair Display", ui-serif, Georgia, serif;
+    font-family: var(--font-display);
     color: var(--foreground);
+    font-weight: normal;
   }
 
   /* ── Font utility classes ── */
-  .font-playfair   { font-family: "Playfair Display", ui-serif, Georgia, serif; }
-  .font-libre      { font-family: "Libre Baskerville", ui-serif, Georgia, serif; }
-  .font-ibm        { font-family: "IBM Plex Serif", ui-serif, Georgia, serif; }
-  .font-inter      { font-family: "Inter", ui-sans-serif, sans-serif; }
-  .font-source     { font-family: "Source Sans Pro", ui-sans-serif, sans-serif; }
-  .font-oldenglish { font-family: "UnifrakturMaguntia", serif; }
+  .font-display    { font-family: var(--font-display); }
+  .font-heading    { font-family: var(--font-heading); }
+  .font-ui         { font-family: var(--font-ui); }
+  .font-mono       { font-family: var(--font-mono); }
 
   /* ── Background utilities ── */
-  .bg-ivory          { background-color: var(--background); }
-  .bg-financial-blue { background-color: var(--financial-blue); }
-  .bg-gold           { background-color: var(--gold); }
-  .bg-gold-accent    { background-color: var(--gold-accent); }
+  .bg-ink            { background-color: var(--ink); }
+  .bg-parchment      { background-color: var(--parchment); }
+  .bg-steel          { background-color: var(--steel); }
+  .bg-midnight       { background-color: var(--midnight); }
+  .bg-ledger-gold    { background-color: var(--ledger-gold); }
+  .bg-data-green     { background-color: var(--data-green); }
   .bg-surface        { background-color: var(--surface); }
   .bg-surface-muted  { background-color: var(--surface-muted); }
 
   /* ── Text utilities ── */
-  .text-ivory            { color: var(--background); }
-  .text-financial-blue   { color: var(--financial-blue); }
-  .text-gold             { color: var(--gold); }
-  .text-gold-accent      { color: var(--gold-accent); }
-  .text-dark-charcoal    { color: var(--dark-charcoal); }
-  .text-bronze           { color: var(--bronze); }
-  .text-deep-green       { color: var(--deep-green); }
-  .text-cyan-glow        { color: var(--cyan-glow); }
-  .text-amber-volatility { color: var(--amber-volatility); }
-  .text-emerald-pulse    { color: var(--emerald-pulse); }
+  .text-ink            { color: var(--ink); }
+  .text-parchment      { color: var(--parchment); }
+  .text-steel          { color: var(--steel); }
+  .text-midnight       { color: var(--midnight); }
+  .text-ledger-gold    { color: var(--ledger-gold); }
+  .text-data-green     { color: var(--data-green); }
 
   /* ── Editorial Border utilities ── */
-  .border-financial-blue { border-color: var(--financial-blue); }
-  .border-gold           { border-color: var(--gold); }
+  .border-ink            { border-color: var(--ink); }
+  .border-ledger-gold    { border-color: var(--ledger-gold); }
   .border-soft           { border-color: var(--border-soft); }
   .border-news-hairline  { border-color: var(--border); border-width: 1px; }
   .border-y-news-double  { border-top: 3px double var(--border); border-bottom: 3px double var(--border); }
@@ -122,29 +113,31 @@
   .border-b-news-thick   { border-bottom: 4px solid var(--border); }
 
   /* ── Ring utilities ── */
-  .focus\:ring-gold:focus { --tw-ring-color: var(--gold); }
-  .focus\:border-gold:focus { border-color: var(--gold); }
+  .focus\:ring-ledger-gold:focus { --tw-ring-color: var(--ledger-gold); }
+  .focus\:border-ledger-gold:focus { border-color: var(--ledger-gold); }
 
   /* ── Editorial Button effects ── */
   .editorial-button {
-    background: linear-gradient(135deg, #D4AF37 0%, #C5A028 100%);
-    color: #1A1C20;
-    border: 1px solid #1A1C20;
-    box-shadow: 2px 2px 0px #1A1C20;
+    background-color: var(--midnight);
+    color: var(--ledger-gold);
+    border: 1px solid var(--midnight);
+    border-radius: 4px;
+    font-family: var(--font-ui);
+    font-weight: 500;
     transition: all 0.2s ease;
   }
   .editorial-button:hover:not(:disabled) {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #1A1C20;
+    background-color: var(--ink);
+    border-color: var(--ink);
   }
   .editorial-button:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 0px 0px 0px #1A1C20;
+    transform: scale(0.98);
   }
   
   .editorial-panel {
-    background-color: var(--background);
+    background-color: var(--parchment);
     border: 1px solid var(--border);
+    border-radius: 8px;
   }
 
   .editorial-shadow {

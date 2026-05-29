@@ -41,22 +41,22 @@ export default function ModelPage() {
     <div className="w-full max-w-5xl mx-auto p-12 flex flex-col gap-12 pb-32">
       
       {/* 1. HERO RESEARCH HEADER */}
-      <div className="border-b border-border-soft/80 pb-10 mt-6 relative">
-        <h1 className="font-libre text-[2.5rem] font-bold text-dark-charcoal tracking-tight uppercase leading-none">{meta.title}</h1>
-        <h2 className="font-inter text-[10px] font-bold uppercase tracking-[0.3em] text-dark-charcoal/60 mt-4">{meta.subtitle}</h2>
+      <div className="border-b border-ink/30 pb-10 mt-6 relative">
+        <h1 className="font-display text-[2.5rem] font-bold text-ink tracking-tight leading-none">{meta.title}</h1>
+        <h2 className="font-ui text-[10px] font-bold tracking-[0.3em] text-ink/60 mt-4">{meta.subtitle}</h2>
         
-        <div className="flex gap-10 mt-10 border-t border-border-soft/40 pt-5">
+        <div className="flex gap-10 mt-10 border-t border-ink/20 pt-5">
           <div>
-            <span className="block text-[8px] font-inter uppercase tracking-[0.2em] font-bold text-dark-charcoal/40 mb-1.5">Edition</span>
-            <span className="text-[10px] font-ibm uppercase text-dark-charcoal font-semibold">Quantitative Research</span>
+            <span className="block text-[8px] font-ui tracking-[0.2em] font-bold text-ink/40 mb-1.5">Edition</span>
+            <span className="text-[10px] font-ui text-ink font-semibold">Quantitative Research</span>
           </div>
           <div>
-            <span className="block text-[8px] font-inter uppercase tracking-[0.2em] font-bold text-dark-charcoal/40 mb-1.5">System State</span>
-            <span className="text-[10px] font-ibm uppercase text-emerald-pulse font-semibold">Probabilistic Engine Active</span>
+            <span className="block text-[8px] font-ui tracking-[0.2em] font-bold text-ink/40 mb-1.5">System State</span>
+            <span className="text-[10px] font-ui text-data-green font-semibold">Probabilistic Engine Active</span>
           </div>
           <div>
-            <span className="block text-[8px] font-inter uppercase tracking-[0.2em] font-bold text-dark-charcoal/40 mb-1.5">Last Sync</span>
-            <span className="text-[10px] font-ibm uppercase text-dark-charcoal font-semibold">{new Date().toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })}</span>
+            <span className="block text-[8px] font-ui tracking-[0.2em] font-bold text-ink/40 mb-1.5">Last Sync</span>
+            <span className="text-[10px] font-ui text-ink font-semibold" suppressHydrationWarning>{new Date().toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })}</span>
           </div>
         </div>
       </div>

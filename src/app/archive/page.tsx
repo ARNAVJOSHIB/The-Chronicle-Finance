@@ -39,7 +39,7 @@ export default function ArchivePage() {
       
       <main className="flex-1 p-12 pb-32">
         <div className="border-b border-dark-charcoal/20 pb-10 mb-12 relative text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] font-inter text-dark-charcoal mb-4">Historical Data</p>
+          <p className="text-[10px] font-bold  tracking-[0.25em] font-inter text-dark-charcoal mb-4">Historical Data</p>
           <h1 className="font-playfair text-5xl md:text-7xl font-black text-dark-charcoal tracking-tight leading-tight mb-6">
             Simulation Archive
           </h1>
@@ -57,10 +57,10 @@ export default function ArchivePage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b-2 border-dark-charcoal bg-dark-charcoal/5">
-                  <th className="py-4 px-6 font-inter text-[10px] uppercase tracking-[0.2em] font-bold text-dark-charcoal">Record ID</th>
-                  <th className="py-4 px-6 font-inter text-[10px] uppercase tracking-[0.2em] font-bold text-dark-charcoal">Framework</th>
-                  <th className="py-4 px-6 font-inter text-[10px] uppercase tracking-[0.2em] font-bold text-dark-charcoal">Timestamp</th>
-                  <th className="py-4 px-6 font-inter text-[10px] uppercase tracking-[0.2em] font-bold text-dark-charcoal text-right">Action</th>
+                  <th className="py-4 px-6 font-inter text-[10px]  tracking-[0.2em] font-bold text-dark-charcoal">Record ID</th>
+                  <th className="py-4 px-6 font-inter text-[10px]  tracking-[0.2em] font-bold text-dark-charcoal">Framework</th>
+                  <th className="py-4 px-6 font-inter text-[10px]  tracking-[0.2em] font-bold text-dark-charcoal">Timestamp</th>
+                  <th className="py-4 px-6 font-inter text-[10px]  tracking-[0.2em] font-bold text-dark-charcoal text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="font-ibm text-sm text-dark-charcoal">
@@ -81,7 +81,7 @@ export default function ArchivePage() {
                     <td className="py-4 px-6 text-right">
                       <Link 
                         href={`/${sim.model_type}?sim_id=${sim.id}`}
-                        className="text-[10px] font-inter uppercase tracking-[0.2em] text-financial-blue hover:text-dark-charcoal transition-colors font-bold whitespace-nowrap border-b border-financial-blue hover:border-dark-charcoal pb-0.5"
+                        className="text-[10px] font-inter  tracking-[0.2em] text-financial-blue hover:text-dark-charcoal transition-colors font-bold whitespace-nowrap border-b border-financial-blue hover:border-dark-charcoal pb-0.5"
                       >
                         Load Model &rarr;
                       </Link>

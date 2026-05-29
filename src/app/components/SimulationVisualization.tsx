@@ -110,12 +110,12 @@ function NodeTooltip({ node, results, mx, my }: { node: NodeData; results: any; 
         boxShadow: '4px 4px 0px rgba(0,0,0,1)',
         fontFamily: 'Inter, sans-serif',
       }}>
-        <div style={{ color: '#D4AF37', fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', marginBottom: 10, textTransform: 'uppercase' }}>
+        <div style={{ color: '#D4AF37', fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', marginBottom: 10, textTransform: '' }}>
           {node.isYearEnd ? `✦ Year ${node.year} End` : `Month ${node.month}`}
         </div>
         {lines.map(l => (
           <div key={l.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 14, marginBottom: 5 }}>
-            <span style={{ color: 'rgba(246,244,240,0.6)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{l.label}</span>
+            <span style={{ color: 'rgba(246,244,240,0.6)', fontSize: 10, textTransform: '', letterSpacing: '0.05em' }}>{l.label}</span>
             <span style={{ color: l.gold ? '#D4AF37' : '#F6F4F0', fontSize: 11, fontWeight: l.gold ? 700 : 500 }}>{l.value}</span>
           </div>
         ))}
@@ -190,7 +190,7 @@ function ResultsSummary({ results }: { results: any }) {
               background: highlight ? 'rgba(212,175,55,0.1)' : 'transparent',
             }}>
               <div className="text-2xl font-black font-playfair mb-1" style={{ color: highlight ? '#D4AF37' : '#F6F4F0' }}>{value}</div>
-              <div className="text-[10px] font-inter uppercase tracking-widest" style={{ color: 'rgba(246,244,240,0.6)' }}>{label}</div>
+              <div className="text-[10px] font-inter  tracking-widest" style={{ color: 'rgba(246,244,240,0.6)' }}>{label}</div>
             </div>
           ))}
         </div>
@@ -288,10 +288,10 @@ export default function SimulationVisualization() {
             className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2"
           >
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] font-inter text-dark-charcoal mb-1">Temporal Network Graph</p>
+              <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Temporal Network Graph</p>
               <h3 className="text-2xl font-black font-playfair text-foreground capitalize">{totalMonths}-Node Infographic</h3>
             </div>
-            <div className="flex gap-5 text-[10px] font-inter tracking-widest font-bold uppercase text-dark-charcoal">
+            <div className="flex gap-5 text-[10px] font-inter tracking-widest font-bold  text-dark-charcoal">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 bg-black block border border-black" />Monthly
               </span>

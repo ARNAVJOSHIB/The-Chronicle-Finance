@@ -36,13 +36,13 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-72 flex-shrink-0 border-r border-black h-full flex flex-col bg-ivory relative z-10 shadow-[4px_0_12px_rgba(0,0,0,0.02)]">
+    <aside className="w-72 flex-shrink-0 border-r border-ink h-full flex flex-col bg-parchment relative z-10 shadow-[4px_0_12px_rgba(11,19,32,0.02)]">
       {/* Masthead Area */}
-      <div className="pt-10 pb-8 px-8 border-b border-black">
+      <div className="pt-10 pb-8 px-8 border-b border-ink">
         <Link href="/">
-          <h1 className="font-oldenglish text-3xl tracking-widest text-dark-charcoal leading-none hover:opacity-80 transition-opacity cursor-pointer">The Chronicle</h1>
+          <h1 className="font-display text-3xl tracking-widest text-ink leading-none hover:opacity-80 transition-opacity cursor-pointer">The Chronicle</h1>
         </Link>
-        <p className="text-[9px] font-inter uppercase tracking-[0.3em] mt-3 font-bold text-dark-charcoal/50">
+        <p className="text-[9px] font-ui tracking-[0.3em] mt-3 font-bold text-ink/50">
           Quantitative Lab
         </p>
       </div>
@@ -53,7 +53,7 @@ export default function Sidebar() {
           {pillars.map((pillar) => (
             <div key={pillar.group} className="px-4">
               {/* Pillar Header (Tiny Serif Caps, Muted Gold) */}
-              <h3 className="text-[10px] font-libre font-bold uppercase tracking-[0.25em] text-gold/80 mb-4 pb-2 border-b border-black/20">
+              <h3 className="text-[11px] font-heading font-bold tracking-[0.1em] text-ledger-gold/80 mb-4 pb-2 border-b border-ink/20">
                 {pillar.group}
               </h3>
               
@@ -63,15 +63,15 @@ export default function Sidebar() {
                   <li key={item.label}>
                     <Link 
                       href={item.path} 
-                      className="group relative flex items-center py-2 px-3 text-[11px] font-inter text-dark-charcoal/60 transition-all duration-300 hover:text-dark-charcoal hover:bg-dark-charcoal/[0.03] rounded-sm"
+                      className="group relative flex items-center py-2 px-3 text-[11px] font-ui text-ink/60 transition-all duration-300 hover:text-ink hover:bg-ink/[0.03] rounded-sm"
                     >
                       {/* Smooth Left Glow Line */}
-                      <span className="absolute left-0 top-[20%] bottom-[20%] w-[2px] bg-gold/80 scale-y-0 group-hover:scale-y-100 origin-center transition-transform duration-300 ease-out" />
+                      <span className="absolute left-0 top-[20%] bottom-[20%] w-[2px] bg-ledger-gold/80 scale-y-0 group-hover:scale-y-100 origin-center transition-transform duration-300 ease-out" />
                       
                       {/* Label with animated underline effect */}
                       <span className="relative z-10 font-medium pl-1 tracking-wide">
                         {item.label}
-                        <span className="absolute left-1 right-0 bottom-0 h-[1px] bg-dark-charcoal/20 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-out" />
+                        <span className="absolute left-1 right-0 bottom-0 h-[1px] bg-ink/20 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-out" />
                       </span>
                     </Link>
                   </li>
@@ -83,11 +83,11 @@ export default function Sidebar() {
       </div>
       
       {/* Bottom Metadata Area */}
-      <div className="p-6 border-t border-black bg-ivory">
-        <div className="flex flex-col gap-1 text-[8px] font-inter uppercase tracking-[0.2em] text-dark-charcoal/40 font-bold leading-relaxed">
+      <div className="p-6 border-t border-ink bg-parchment">
+        <div className="flex flex-col gap-1 text-[8px] font-ui tracking-[0.2em] text-ink/40 font-bold leading-relaxed">
           <p>Quantitative Research Edition</p>
           <p>Issue 06 &middot; Vol. II</p>
-          <p className="text-gold/70 mt-1">Probabilistic Systems Active</p>
+          <p className="text-ledger-gold/70 mt-1">Probabilistic Systems Active</p>
         </div>
       </div>
     </aside>

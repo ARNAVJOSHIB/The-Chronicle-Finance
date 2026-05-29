@@ -17,7 +17,7 @@ export default function ErrorBoundary({
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 bg-ivory">
       <div className="max-w-2xl w-full editorial-panel border-black p-12 md:p-16 text-center">
-        <h2 className="text-[10px] font-bold uppercase tracking-[0.25em] font-inter text-red-700 mb-6">
+        <h2 className="text-[10px] font-bold  tracking-[0.25em] font-inter text-red-700 mb-6">
           System Interruption
         </h2>
         
@@ -38,14 +38,14 @@ export default function ErrorBoundary({
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => reset()}
-            className="editorial-button px-8 py-3 text-[11px] font-bold uppercase tracking-[0.1em] font-inter text-dark-charcoal"
+            className="editorial-button px-8 py-3 text-[11px] font-bold  tracking-[0.1em] font-inter text-dark-charcoal"
           >
             Attempt Recovery
           </button>
           
           <button
             onClick={() => window.location.href = '/'}
-            className="px-8 py-3 text-[11px] font-bold uppercase tracking-[0.1em] font-inter text-dark-charcoal/60 hover:text-dark-charcoal transition-colors border border-transparent hover:border-dark-charcoal/20"
+            className="px-8 py-3 text-[11px] font-bold  tracking-[0.1em] font-inter text-dark-charcoal/60 hover:text-dark-charcoal transition-colors border border-transparent hover:border-dark-charcoal/20"
           >
             Return Home
           </button>

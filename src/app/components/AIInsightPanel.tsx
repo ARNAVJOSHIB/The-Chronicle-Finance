@@ -43,23 +43,23 @@ export default function AIInsightPanel() {
 
   return (
     <div className="max-w-5xl mx-auto w-full px-4 mb-16">
-      <div className="border border-black bg-surface relative">
-        <div className="px-6 py-4 flex items-center justify-between border-b-news-thick">
+      <div className="border border-ink bg-parchment relative">
+        <div className="px-6 py-4 flex items-center justify-between border-b-news-thick border-ink">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] font-inter text-dark-charcoal mb-1">
+            <p className="text-[10px] font-bold tracking-[0.25em] font-ui text-ink mb-1">
               Powered by Groq
             </p>
-            <h3 className="text-3xl font-black font-playfair text-foreground uppercase tracking-tight">
-              Editorial Insight
+            <h3 className="text-2xl font-bold font-heading text-ink tracking-tight">
+              Editorial insight
             </h3>
           </div>
           <button
             id="ai-insight-btn"
             onClick={fetchInsight}
             disabled={loading}
-            className="editorial-button flex items-center gap-2 px-6 py-2 font-bold font-inter text-[11px] disabled:opacity-50 tracking-[0.1em] uppercase"
+            className="editorial-button flex items-center gap-2 px-6 py-2 font-bold font-ui text-[11px] disabled:opacity-50 tracking-[0.1em]"
           >
-            {loading ? 'Consulting…' : 'Generate Analysis'}
+            {loading ? 'Consulting…' : 'Generate analysis'}
           </button>
         </div>
 
@@ -71,7 +71,7 @@ export default function AIInsightPanel() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-sm font-ibm italic text-dark-charcoal/60 text-center py-8"
+                className="text-sm font-ui italic text-ink/60 text-center py-8"
               >
                 Click "Generate Analysis" to receive a professional editorial analysis of your simulation results.
               </motion.p>
@@ -89,13 +89,13 @@ export default function AIInsightPanel() {
                   {[0, 1, 2].map((i) => (
                     <motion.div
                       key={i}
-                      className="w-3 h-3 bg-black"
+                      className="w-3 h-3 bg-ink"
                       animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
                       transition={{ duration: 0.8, delay: i * 0.15, repeat: Infinity }}
                     />
                   ))}
                 </div>
-                <span className="text-xs font-inter font-bold uppercase tracking-widest text-dark-charcoal">
+                <span className="text-xs font-ui font-bold  tracking-widest text-ink">
                   Synthesizing Information...
                 </span>
               </motion.div>
@@ -107,7 +107,7 @@ export default function AIInsightPanel() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-sm font-ibm italic font-bold text-red-700 bg-red-50 p-4 border border-red-900"
+                className="text-sm font-ui italic font-bold text-red-700 bg-red-50 p-4 border border-red-900"
               >
                 Correction required: {error}
               </motion.p>
@@ -122,17 +122,17 @@ export default function AIInsightPanel() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
                 <div 
-                  className="text-sm font-ibm text-dark-charcoal text-justify md:columns-2 gap-8"
+                  className="text-sm font-ui text-ink text-justify md:columns-2 gap-8"
                   style={{ lineHeight: '1.8' }}
                 >
                   {/* Fake dropcap effect */}
-                  <span className="float-left text-5xl leading-none font-playfair font-black mr-2 mt-1 uppercase text-gold">
+                  <span className="float-left text-5xl leading-none font-display font-black mr-2 mt-1  text-ledger-gold">
                     {insight.charAt(0)}
                   </span>
                   {insight.substring(1)}
                 </div>
-                <div className="mt-8 pt-4 border-t border-black/20 text-center">
-                  <span className="text-[10px] font-inter font-bold uppercase tracking-[0.2em] text-dark-charcoal/50">
+                <div className="mt-8 pt-4 border-t border-ink/20 text-center">
+                  <span className="text-[10px] font-ui font-bold  tracking-[0.2em] text-ink/50">
                     Chronicle Finance · Opinion Section
                   </span>
                 </div>

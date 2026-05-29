@@ -8,7 +8,7 @@ export default function InsightsPage() {
       <Navbar />
       <div className="pt-4 pb-24 px-6 max-w-7xl mx-auto">
         <div className="border-b-news-thick pb-6 mb-10 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] font-inter text-dark-charcoal mb-4">AI Intelligence</p>
+          <p className="text-[10px] font-bold  tracking-[0.25em] font-inter text-dark-charcoal mb-4">AI Intelligence</p>
           <h1 className="text-5xl md:text-7xl font-black font-playfair text-foreground tracking-tight mb-6">
             Financial Insights
           </h1>
@@ -23,7 +23,7 @@ export default function InsightsPage() {
               <div className="text-4xl font-oldenglish text-gold mb-6 border-b border-black/20 pb-4">
                 NO. 0{i}
               </div>
-              <h3 className="text-2xl font-black font-playfair text-foreground mb-3 uppercase">
+              <h3 className="text-2xl font-black font-playfair text-foreground mb-3 ">
                 {i === 1 ? 'Market Volatility Analysis' : i === 2 ? 'Compounding Acceleration' : i === 3 ? 'Terminal Value Projections' : 'Risk-Adjusted Return Profile'}
               </h3>
               <p className="text-sm text-dark-charcoal/80 font-ibm leading-relaxed text-justify">

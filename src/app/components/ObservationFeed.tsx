@@ -57,8 +57,8 @@ export default function ObservationFeed({ results, selectedModel }: { results: a
   if (!results) return null;
 
   return (
-    <div className="px-8 py-6 border-b border-border-soft/30 bg-ivory">
-      <h3 className="text-[10px] font-inter uppercase tracking-[0.2em] font-bold mb-6 text-dark-charcoal/70">Observation Feed</h3>
+    <div className="px-8 py-6 border-b border-border-soft/30 bg-parchment">
+      <h3 className="text-[11px] font-heading tracking-[0.1em] font-bold mb-6 text-ink/70">Observation feed</h3>
       <ul className="space-y-6">
         <AnimatePresence>
           {observations.map((obs, idx) => (
@@ -70,12 +70,12 @@ export default function ObservationFeed({ results, selectedModel }: { results: a
               className="relative"
             >
               <div className="flex items-start gap-3">
-                <span className="mt-1 w-[4px] h-[4px] rounded-full bg-gold/60 flex-shrink-0" />
+                <span className="mt-1 w-[4px] h-[4px] rounded-full bg-ledger-gold/60 flex-shrink-0" />
                 <div>
-                  <span className="text-[8px] font-mono font-bold text-dark-charcoal/40 block mb-1 uppercase tracking-widest">
-                     T+{(idx * 150 + 400).toString().padStart(4, '0')}ms &middot; SYSTEM LOG
+                  <span className="text-[8px] font-mono font-bold text-ink/40 block mb-1 tracking-widest">
+                     T+{(idx * 150 + 400).toString().padStart(4, '0')}ms &middot; System log
                   </span>
-                  <p className="text-[11.5px] font-ibm text-dark-charcoal/85 leading-[1.6]">
+                  <p className="text-[11.5px] font-ui text-ink/85 leading-[1.6]">
                     {obs}
                   </p>
                 </div>

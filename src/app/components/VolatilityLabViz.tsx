@@ -38,7 +38,7 @@ export default function VolatilityLabViz({ results }: { results: any }) {
     <div className="w-full mb-12">
       <div className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] font-inter text-dark-charcoal mb-1">Stochastic Volatility</p>
+          <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Stochastic Volatility</p>
           <h3 className="text-2xl font-black font-playfair text-foreground capitalize">Realized Volatility & Regimes</h3>
         </div>
       </div>
