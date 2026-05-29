@@ -61,7 +61,7 @@ BACKEND:
 Python FastAPI
 
 DATABASE:
-PostgreSQL
+Supabase PostgreSQL
 
 ANIMATION:
 Framer Motion + Three.js
@@ -293,7 +293,7 @@ This prevents:
 ==================================================
 
 PRIMARY DATABASE:
-PostgreSQL
+Supabase PostgreSQL
 
 PURPOSE:
 - simulation storage
@@ -363,7 +363,7 @@ BACKEND HOSTING:
 Railway or Render
 
 DATABASE HOSTING:
-Supabase PostgreSQL or managed PostgreSQL provider
+Supabase
 
 ==================================================
 24. WHY VERCEL
@@ -412,8 +412,8 @@ All APIs must:
 27. AUTHENTICATION STACK
 ==================================================
 
-PREFERRED AUTH SYSTEM:
-NextAuth or Clerk
+PREFFERED AUTH SYSTEM:
+Supabase Auth
 
 PURPOSE:
 - account systems

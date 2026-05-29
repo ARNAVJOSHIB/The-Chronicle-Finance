@@ -3,8 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function Navbar() {
+  const { user, signOut } = useAuth();
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -27,8 +29,30 @@ export default function Navbar() {
           <Link href="/about" className="hover:underline">About</Link>
         </div>
         
-        <div className="text-[10px] font-inter tracking-[0.15em] uppercase text-dark-charcoal font-bold">
-          EST. 2024
+        <div className="flex items-center gap-6">
+          <div className="text-[10px] font-inter tracking-[0.15em] uppercase text-dark-charcoal font-bold hidden sm:block">
+            EST. 2024
+          </div>
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-[9px] font-inter uppercase tracking-[0.2em] text-dark-charcoal/40">
+                {user.email?.split('@')[0]}
+              </span>
+              <button
+                onClick={signOut}
+                className="text-[9px] font-inter uppercase tracking-[0.2em] text-dark-charcoal/60 hover:text-dark-charcoal transition-colors font-bold"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/auth"
+              className="text-[9px] font-inter uppercase tracking-[0.2em] text-dark-charcoal/60 hover:text-dark-charcoal transition-colors font-bold"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       </div>
 

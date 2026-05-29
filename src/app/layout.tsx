@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   },
 };
 
+import { AuthProvider } from "./context/AuthContext";
 import { SimulationProvider } from "./context/SimulationContext";
 import Sidebar from "./components/Sidebar";
 import AnalyticsPanel from "./components/AnalyticsPanel";
@@ -26,21 +27,23 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <div className="bg-texture"></div>
-        <SimulationProvider>
-          <div className="h-screen w-full flex bg-transparent overflow-hidden relative z-10">
-            {/* Left Sidebar */}
-            <Sidebar />
+        <AuthProvider>
+          <div className="bg-texture"></div>
+          <SimulationProvider>
+            <div className="h-screen w-full flex bg-transparent overflow-hidden relative z-10">
+              {/* Left Sidebar */}
+              <Sidebar />
 
-            {/* Main Workspace */}
-            <main className="flex-1 flex flex-col h-full overflow-y-auto relative bg-transparent scroll-smooth no-scrollbar">
-              {children}
-            </main>
+              {/* Main Workspace */}
+              <main className="flex-1 flex flex-col h-full overflow-y-auto relative bg-transparent scroll-smooth no-scrollbar">
+                {children}
+              </main>
 
-            {/* Right Analytics Panel */}
-            <AnalyticsPanel />
-          </div>
-        </SimulationProvider>
+              {/* Right Analytics Panel */}
+              <AnalyticsPanel />
+            </div>
+          </SimulationProvider>
+        </AuthProvider>
       </body>
     </html>
   );

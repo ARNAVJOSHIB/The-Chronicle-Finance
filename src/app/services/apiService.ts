@@ -1,9 +1,9 @@
 // API service for connecting to the backend
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
 export interface SavedSimulation {
   id: number;
-  user_id?: number;
+  user_id?: string;
   model_type: string;
   parameters: any;
   results: any;
@@ -79,10 +79,26 @@ export interface VolatilityData {
   timeSteps: number;
 }
 
+import { createClient } from '@/lib/supabase/client';
+
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const supabase = createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.access_token) {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`
+    }
+  }
+  return { 'Content-Type': 'application/json' }
+}
+
 // Helper to handle fetch and provide better error messages for connection issues
-async function safeFetch(endpoint: string, options?: RequestInit) {
+async function safeFetch(endpoint: string, options: RequestInit = {}) {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    const authHeaders = await getAuthHeaders();
+    const headers = { ...authHeaders, ...options.headers };
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.detail || `Server error: ${response.status}`);
@@ -249,5 +265,15 @@ export const apiService = {
   getSimulations: async (modelType?: string): Promise<SavedSimulation[]> => {
     const url = modelType ? `/simulations?model_type=${modelType}` : `/simulations`;
     return safeFetch(url);
+  },
+
+  // Get User Simulations
+  getUserSimulations: async (userId: string): Promise<SavedSimulation[]> => {
+    return safeFetch(`/simulations/user/${userId}`);
+  },
+
+  // Get Single Simulation
+  getSimulation: async (id: number): Promise<SavedSimulation> => {
+    return safeFetch(`/simulations/${id}`);
   },
 };

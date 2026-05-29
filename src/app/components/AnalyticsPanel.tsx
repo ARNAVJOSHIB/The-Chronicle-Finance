@@ -22,7 +22,22 @@ export default function AnalyticsPanel() {
         <div className="px-8 py-6 border-b border-black/20">
           <div className="flex items-center justify-between mb-5">
              <h3 className="text-[10px] font-inter uppercase tracking-[0.2em] font-bold text-dark-charcoal/70">Active Framework</h3>
-             <span className="text-[9px] font-mono bg-dark-charcoal/5 px-2 py-0.5 rounded text-dark-charcoal/60">{simId}</span>
+             <div className="flex items-center gap-3">
+               {hasRun && results?.id && (
+                 <button 
+                   onClick={() => {
+                     const url = new URL(window.location.href);
+                     url.searchParams.set('sim_id', results.id);
+                     navigator.clipboard.writeText(url.toString());
+                     alert('Research URL copied to clipboard.');
+                   }}
+                   className="text-[9px] font-inter uppercase tracking-[0.2em] text-financial-blue hover:text-dark-charcoal transition-colors font-bold"
+                 >
+                   Share
+                 </button>
+               )}
+               <span className="text-[9px] font-mono bg-dark-charcoal/5 px-2 py-0.5 rounded text-dark-charcoal/60">{simId}</span>
+             </div>
           </div>
           
           <div className="space-y-4">

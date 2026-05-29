@@ -1,15 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSimulation } from '../context/SimulationContext';
+import { apiService } from '../services/apiService';
 
 export default function ResearchNotes() {
   const [note, setNote] = useState('');
   const [savedNotes, setSavedNotes] = useState<{ date: string; content: string }[]>([]);
+  const { results, setResults } = useSimulation();
+  
+  useEffect(() => {
+    if (results?.notes) {
+      // Very basic parsing since we stored as [time] content\n
+      const lines = results.notes.split('\n');
+      const parsed = lines.map((line: string) => {
+        const match = line.match(/^\[(.*?)\] (.*)$/);
+        if (match) {
+          return { date: match[1], content: match[2] };
+        }
+        return { date: '', content: line };
+      });
+      setSavedNotes(parsed);
+    } else {
+      setSavedNotes([]);
+    }
+  }, [results?.id, results?.notes]);
 
-  const handleSave = () => {
-    if (!note.trim()) return;
+  const handleSave = async () => {
+    if (!note.trim() || !results?.id) return;
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setSavedNotes([{ date: now, content: note }, ...savedNotes]);
+    const newNotes = [{ date: now, content: note }, ...savedNotes];
+    setSavedNotes(newNotes);
+    
+    // Combine all notes into one string for the backend
+    const allNotesText = newNotes.map(n => `[${n.date}] ${n.content}`).join('\n');
+    
+    try {
+      await apiService.saveNotes(results.id, allNotesText);
+      setResults({ ...results, notes: allNotesText });
+    } catch (err) {
+      console.error("Failed to save notes to backend:", err);
+    }
+    
     setNote('');
   };
 

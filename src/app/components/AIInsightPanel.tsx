@@ -26,6 +26,7 @@ export default function AIInsightPanel() {
           model_type: results.modelType ?? 'financial',
           model_results: results,
           simulation_id: results.id,
+          user_notes: results.notes || undefined,
         }),
       });
       if (!response.ok) throw new Error(`Server error: ${response.status}`);

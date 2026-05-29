@@ -177,7 +177,9 @@ HANDLES:
 - preferences
 
 TECH STACK:
-- PostgreSQL
+- Supabase PostgreSQL (Database)
+- Supabase Auth (Authentication & Row Level Security)
+- JSON (Legacy/Fallback, Deprecated)
 
 ==================================================
 LAYER 6

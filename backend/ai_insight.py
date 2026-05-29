@@ -5,7 +5,9 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 import json
 import os
-from db import get_db_connection
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # AI Insight Generator
 class AIInsightGenerator:
@@ -14,16 +16,18 @@ class AIInsightGenerator:
         if self.api_key:
             self.client = Groq(api_key=self.api_key)
 
-    def generate_insight(self, model_results: Dict[str, Any], model_type: str) -> str:
+    def generate_insight(self, model_results: Dict[str, Any], model_type: str, user_notes: Optional[str] = None) -> str:
         """
         Generate financial insights based on model results using Groq
         """
         if not self.api_key:
             return "AI insights not configured. Please set your Groq API key."
 
+        notes_section = f"\n        ANALYST NOTES:\n        {user_notes}\n" if user_notes else ""
+
         prompt = f"""
         Analyze the following {model_type} simulation results and provide a professional financial editorial insight.
-        
+        {notes_section}
         DATA TO ANALYZE:
         {json.dumps(model_results, indent=2)}
 
@@ -31,8 +35,9 @@ class AIInsightGenerator:
         1. Reference at least 2 specific numbers from the results (e.g., Final Amount, NPV, Mean Value, or specific yearly cash flows).
         2. Explain the significance of these numbers in a professional, editorial tone.
         3. Do NOT provide generic financial advice or "random quotes". Focus strictly on the data provided.
-        4. Maximum 100 words.
-        5. Tone: Premium financial newspaper (The Economist / Financial Times).
+        4. If Analyst Notes are provided, incorporate their context or perspective into your analysis.
+        5. Maximum 100 words.
+        6. Tone: Premium financial newspaper (The Economist / Financial Times).
         """
 
         try:
@@ -61,8 +66,9 @@ ai_insight_router = APIRouter()
 class AIInsightRequest(BaseModel):
     model_type: str
     model_results: Dict[str, Any]
-    user_id: Optional[int] = None
+    user_id: Optional[str] = None
     simulation_id: Optional[int] = None
+    user_notes: Optional[str] = None
 
 class AIInsightResponse(BaseModel):
     insight: str
@@ -75,7 +81,8 @@ ai_insight_generator = AIInsightGenerator()
 async def generate_ai_insight(request: AIInsightRequest):
     insight = ai_insight_generator.generate_insight(
         request.model_results,
-        request.model_type
+        request.model_type,
+        request.user_notes
     )
 
     return AIInsightResponse(

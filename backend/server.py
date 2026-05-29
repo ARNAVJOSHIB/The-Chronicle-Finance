@@ -2,8 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
+from dotenv import load_dotenv
 from models import router
 from ai_insight import ai_insight_router
+
+load_dotenv()
 
 app = FastAPI(
     title="Chronicle Finance API",
@@ -11,13 +14,17 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS – allow all origins so the Next.js dev server can call the API
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000"
+).split(",")
+
+# Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_url],
-    allow_credentials=False,
-    allow_methods=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 

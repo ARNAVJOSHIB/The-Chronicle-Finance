@@ -1,12 +1,28 @@
-from fastapi import FastAPI, APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Request, Header, Depends
+from pydantic import BaseModel, Field
 import numpy as np
 import pandas as pd
 import math
 from typing import List, Dict, Any, Optional
 import json
-from db import get_db_connection, save_simulation_fallback, get_simulations_fallback
-from psycopg2.extras import RealDictCursor
+from db import get_supabase
+from limiter import limiter
+import os
+from supabase import create_client
+
+async def get_current_user_id(authorization: str = Header(None)) -> str | None:
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    token = authorization.replace("Bearer ", "")
+    try:
+        supabase = create_client(
+            os.getenv("SUPABASE_URL"),
+            os.getenv("SUPABASE_SERVICE_KEY")
+        )
+        user = supabase.auth.get_user(token)
+        return user.user.id if user.user else None
+    except Exception:
+        return None
 
 # Create a router for the API endpoints
 router = APIRouter()
@@ -14,7 +30,7 @@ router = APIRouter()
 # Data models for requests and responses
 class SimulationData(BaseModel):
     id: Optional[int] = None
-    user_id: Optional[int] = 1
+    user_id: Optional[str] = None
     model_type: str
     parameters: dict
     results: dict
@@ -184,25 +200,25 @@ def calculate_dcf(request: DCFRequest):
 # Monte Carlo Simulation Model
 # Monte Carlo Simulation Model (Stochastic DCF)
 class MonteCarloRequest(BaseModel):
-    initial_revenue: float
-    revenue_growth_mean: float
-    revenue_growth_std: float
-    operating_margin_mean: float
-    operating_margin_std: float
-    tax_rate: float
-    discount_rate: float
-    terminal_growth_rate: float
-    num_simulations: int
-    years: int
+    initial_revenue: float = Field(..., gt=0, le=1e12)
+    revenue_growth_mean: float = Field(..., ge=-50, le=100)
+    revenue_growth_std: float = Field(..., ge=0, le=50)
+    operating_margin_mean: float = Field(..., ge=-100, le=100)
+    operating_margin_std: float = Field(..., ge=0, le=30)
+    tax_rate: float = Field(..., ge=0, le=60)
+    discount_rate: float = Field(..., gt=0, le=50)
+    terminal_growth_rate: float = Field(..., ge=0, le=15)
+    num_simulations: int = Field(..., ge=100, le=10000)
+    years: int = Field(..., ge=1, le=30)
 
 
 class GBMRequest(BaseModel):
-    initial_price: float
-    drift: float
-    volatility: float
-    time_horizon_years: float
-    steps_per_year: int
-    num_simulations: int
+    initial_price: float = Field(..., gt=0, le=1e9)
+    drift: float = Field(..., ge=-100, le=200)
+    volatility: float = Field(..., gt=0, le=200)
+    time_horizon_years: float = Field(..., gt=0, le=30)
+    steps_per_year: int = Field(..., ge=12, le=365)
+    num_simulations: int = Field(..., ge=10, le=1000)
 
 class GBMResponse(BaseModel):
     paths: list
@@ -214,18 +230,19 @@ class GBMResponse(BaseModel):
     time_steps: list
 
 @router.post("/run-gbm", response_model=GBMResponse)
-def run_gbm(request: GBMRequest):
+@limiter.limit("20/minute")
+def run_gbm(request: Request, req: GBMRequest):
     """
     Run Geometric Brownian Motion simulations.
     S_t = S_0 * exp((mu - sigma^2 / 2)t + sigma * W_t)
     """
-    S0 = request.initial_price
-    mu = request.drift / 100
-    sigma = request.volatility / 100
-    T = request.time_horizon_years
-    N = int(request.steps_per_year * T)
-    dt = 1.0 / request.steps_per_year
-    M = request.num_simulations
+    S0 = req.initial_price
+    mu = req.drift / 100
+    sigma = req.volatility / 100
+    T = req.time_horizon_years
+    N = int(req.steps_per_year * T)
+    dt = 1.0 / req.steps_per_year
+    M = req.num_simulations
     
     paths = np.zeros((N + 1, M))
     paths[0] = S0
@@ -260,7 +277,8 @@ class MonteCarloResponse(BaseModel):
     percentiles: dict
 
 @router.post("/run-monte-carlo", response_model=MonteCarloResponse)
-def run_monte_carlo(request: MonteCarloRequest):
+@limiter.limit("10/minute")
+def run_monte_carlo(request: Request, req: MonteCarloRequest):
     """
     Run a Stochastic DCF Monte Carlo simulation.
     Simulates revenue growth and margins as random variables.
@@ -268,26 +286,26 @@ def run_monte_carlo(request: MonteCarloRequest):
     npv_results = []
     all_paths = []
     
-    r = request.discount_rate / 100
-    g_terminal = request.terminal_growth_rate / 100
+    r = req.discount_rate / 100
+    g_terminal = req.terminal_growth_rate / 100
     
-    for _ in range(request.num_simulations):
+    for _ in range(req.num_simulations):
         # Each simulation trial
         trial_pvs = []
         cumulative_pvs = [0]
-        current_revenue = request.initial_revenue
+        current_revenue = req.initial_revenue
         last_cf = 0
         
-        for year in range(1, request.years + 1):
+        for year in range(1, req.years + 1):
             # Sample growth and margin
-            growth = np.random.normal(request.revenue_growth_mean / 100, request.revenue_growth_std / 100)
-            margin = np.random.normal(request.operating_margin_mean / 100, request.operating_margin_std / 100)
+            growth = np.random.normal(req.revenue_growth_mean / 100, req.revenue_growth_std / 100)
+            margin = np.random.normal(req.operating_margin_mean / 100, req.operating_margin_std / 100)
             
             # Apply growth starting Year 1
             current_revenue *= (1 + growth)
             
             ebit = current_revenue * margin
-            atcf = ebit * (1 - request.tax_rate / 100)
+            atcf = ebit * (1 - req.tax_rate / 100)
             
             pv = atcf / (1 + r)**year
             trial_pvs.append(pv)
@@ -332,45 +350,31 @@ def run_monte_carlo(request: MonteCarloRequest):
 
 # API endpoint to save a simulation
 @router.post("/simulations", response_model=SimulationData)
-def save_simulation(simulation: SimulationData):
+def save_simulation(
+    simulation: SimulationData,
+    user_id: str | None = Depends(get_current_user_id)
+):
     """
     Save a simulation to the database.
     """
-    conn = get_db_connection()
-    if not conn:
-        # FALLBACK: Save to JSON file
-        try:
-            new_simulation = save_simulation_fallback(
-                simulation.user_id, 
-                simulation.model_type, 
-                simulation.parameters, 
-                simulation.results
-            )
-            return SimulationData(**new_simulation)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error saving to fallback: {str(e)}")
-    
+    simulation.user_id = user_id
+    supabase = get_supabase()
     try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
-                INSERT INTO simulations (user_id, model_type, parameters, results)
-                VALUES (%s, %s, %s, %s)
-                RETURNING *
-            """, (simulation.user_id, simulation.model_type, json.dumps(simulation.parameters), json.dumps(simulation.results)))
-            
-            new_simulation = cur.fetchone()
-            conn.commit()
-            
-            # Convert timestamp to string
-            if new_simulation and 'created_at' in new_simulation:
-                new_simulation['created_at'] = str(new_simulation['created_at'])
-                
-            return SimulationData(**new_simulation)
+        data = {
+            "user_id": str(simulation.user_id) if simulation.user_id else None,
+            "model_type": simulation.model_type,
+            "parameters": simulation.parameters,
+            "results": simulation.results,
+            "notes": simulation.notes,
+        }
+        response = supabase.table("simulations").insert(data).execute()
+        if response.data:
+            record = response.data[0]
+            record['created_at'] = str(record['created_at'])
+            return SimulationData(**record)
+        raise HTTPException(status_code=500, detail="Failed to save simulation")
     except Exception as e:
-        conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error saving simulation: {str(e)}")
-    finally:
-        conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
 
 # API endpoint to get all simulations
 @router.get("/simulations", response_model=List[SimulationData])
@@ -378,34 +382,19 @@ def get_simulations(model_type: str = None):
     """
     Retrieve all simulations, optionally filtered by model_type.
     """
-    conn = get_db_connection()
-    if not conn:
-        # FALLBACK: Get from JSON file
-        try:
-            simulations = get_simulations_fallback(model_type)
-            return [SimulationData(**sim) for sim in simulations]
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching from fallback: {str(e)}")
-    
+    supabase = get_supabase()
     try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            if model_type:
-                cur.execute("SELECT * FROM simulations WHERE model_type = %s ORDER BY created_at DESC", (model_type,))
-            else:
-                cur.execute("SELECT * FROM simulations ORDER BY created_at DESC")
-            
-            simulations = cur.fetchall()
-            
-            # Convert timestamps to strings
-            for sim in simulations:
-                if 'created_at' in sim:
-                    sim['created_at'] = str(sim['created_at'])
-                    
-            return [SimulationData(**sim) for sim in simulations]
+        query = supabase.table("simulations").select("*").order("created_at", desc=True)
+        if model_type:
+            query = query.eq("model_type", model_type)
+        response = query.execute()
+        result = []
+        for sim in response.data:
+            sim['created_at'] = str(sim['created_at'])
+            result.append(SimulationData(**sim))
+        return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching simulations: {str(e)}")
-    finally:
-        conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
 
 # API endpoint to get a simulation by ID
 @router.get("/simulations/{simulation_id}", response_model=SimulationData)
@@ -413,22 +402,36 @@ def get_simulation(simulation_id: int):
     """
     Retrieve a simulation by ID from the database.
     """
-    # In a real implementation, this would actually retrieve from the database
-    # For now, we'll just return a placeholder
-    return SimulationData(
-        user_id=1,
-        model_type="sample",
-        parameters={},
-        results={}
-    )
+    supabase = get_supabase()
+    try:
+        response = supabase.table("simulations").select("*").eq("id", simulation_id).single().execute()
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Simulation not found")
+        response.data['created_at'] = str(response.data['created_at'])
+        return SimulationData(**response.data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # API endpoint to get all simulations for a user
 @router.get("/simulations/user/{user_id}", response_model=List[SimulationData])
-def get_simulations_by_user(user_id: int):
+def get_simulations_by_user(user_id: str):
     """
     Retrieve all simulations for a user from the database.
     """
-    return []
+    supabase = get_supabase()
+    try:
+        response = supabase.table("simulations").select("*").eq(
+            "user_id", user_id
+        ).order("created_at", desc=True).execute()
+        result = []
+        for sim in response.data:
+            sim['created_at'] = str(sim['created_at'])
+            result.append(SimulationData(**sim))
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 class NotesUpdate(BaseModel):
     notes: str
@@ -438,38 +441,30 @@ def update_simulation_notes(simulation_id: int, update: NotesUpdate):
     """
     Update notes for a specific simulation.
     """
-    conn = get_db_connection()
-    if not conn:
-        from db import update_simulation_notes_fallback
-        success = update_simulation_notes_fallback(simulation_id, update.notes)
-        if not success:
-            raise HTTPException(status_code=404, detail="Simulation not found in fallback storage")
-        return {"status": "success", "message": "Notes updated in fallback storage"}
-        
+    supabase = get_supabase()
     try:
-        with conn.cursor() as cur:
-            cur.execute(
-                "UPDATE simulations SET notes = %s WHERE id = %s RETURNING id",
-                (update.notes, simulation_id)
-            )
-            if not cur.fetchone():
-                conn.rollback()
-                raise HTTPException(status_code=404, detail="Simulation not found")
-            conn.commit()
-            return {"status": "success", "message": "Notes updated successfully"}
+        response = supabase.table("simulations").update(
+            {"notes": update.notes}
+        ).eq("id", simulation_id).execute()
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Simulation not found")
+        return {"status": "success", "message": "Notes updated successfully"}
     except HTTPException:
         raise
     except Exception as e:
-        conn.rollback()
-        raise HTTPException(status_code=500, detail=f"Error updating notes: {str(e)}")
-    finally:
-        conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
 
 # --- NEW QUANT MODELS (PORTFOLIO, VAR, CORRELATION, VOLATILITY) ---
 
 import scipy.optimize as sco
 
+class AssetInput(BaseModel):
+    name: str
+    expected_return: float
+    volatility: float
+
 class PortfolioOptRequest(BaseModel):
+    assets: Optional[List[AssetInput]] = None
     num_assets: int = 5
     risk_free_rate: float = 2.0
     simulations: int = 3000
@@ -490,16 +485,25 @@ class PortfolioOptResponse(BaseModel):
     min_vol_weights: list
     min_vol_return: float
     min_vol_vol: float
+    is_demo: bool = False
 
 @router.post("/portfolio-optimization", response_model=PortfolioOptResponse)
-def run_portfolio_optimization(req: PortfolioOptRequest):
-    np.random.seed(42)
-    n = req.num_assets
-    assets = [f"Asset {chr(65+i)}" for i in range(n)]
+@limiter.limit("5/minute")
+def run_portfolio_optimization(request: Request, req: PortfolioOptRequest):
+    np.random.seed(None)
     
-    # Synthetic data
-    returns = np.random.uniform(0.03, 0.15, n)
-    vols = np.random.uniform(0.10, 0.35, n)
+    if req.assets:
+        n = len(req.assets)
+        assets = [a.name for a in req.assets]
+        returns = np.array([a.expected_return / 100.0 for a in req.assets])
+        vols = np.array([a.volatility / 100.0 for a in req.assets])
+        is_demo = False
+    else:
+        n = req.num_assets
+        assets = [f"Asset {chr(65+i)}" for i in range(n)]
+        returns = np.random.uniform(0.03, 0.15, n)
+        vols = np.random.uniform(0.10, 0.35, n)
+        is_demo = True
     
     # Random correlation matrix (positive semi-definite)
     A = np.random.randn(n, n)
@@ -587,16 +591,17 @@ def run_portfolio_optimization(req: PortfolioOptRequest):
         max_sharpe_vol=max_sr_vol,
         min_vol_weights=min_vol_w.tolist(),
         min_vol_return=min_vol_ret,
-        min_vol_vol=min_vol_vol
+        min_vol_vol=min_vol_vol,
+        is_demo=is_demo
     )
 
 
 class VaRRequest(BaseModel):
-    portfolio_value: float = 1000000.0
-    confidence_level: float = 95.0
-    mean_return: float = 8.0
-    volatility: float = 15.0
-    time_horizon_days: int = 1
+    portfolio_value: float = Field(..., gt=0, le=1e12)
+    confidence_level: float = Field(..., ge=90, le=99.9)
+    mean_return: float = Field(..., ge=-100, le=200)
+    volatility: float = Field(..., gt=0, le=200)
+    time_horizon_days: int = Field(..., ge=1, le=252)
 
 class VaRResponse(BaseModel):
     parametric_var: float
@@ -605,7 +610,8 @@ class VaRResponse(BaseModel):
     simulated_losses: list
 
 @router.post("/calculate-var", response_model=VaRResponse)
-def calculate_var(req: VaRRequest):
+@limiter.limit("10/minute")
+def calculate_var(request: Request, req: VaRRequest):
     import scipy.stats as stats
     
     z_score = stats.norm.ppf(req.confidence_level / 100.0)

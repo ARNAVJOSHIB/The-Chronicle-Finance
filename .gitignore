@@ -45,3 +45,7 @@ venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+backend/.env
+backend/venv/
+backend/__pycache__/
+backend/simulations_storage.json

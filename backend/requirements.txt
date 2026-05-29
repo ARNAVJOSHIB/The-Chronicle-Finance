@@ -5,3 +5,8 @@ pandas==3.0.2
 scipy==1.17.1
 psycopg2==2.9.12
 groq==1.2.0
+python-dotenv==1.0.0
+slowapi==0.1.9
+PyJWT==2.8.0
+cryptography==42.0.0
+supabase==2.3.0

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { apiService, CompoundInterestData, DCFData, MonteCarloData, GBMData } from '../services/apiService';
 import { useSimulation } from '../context/SimulationContext';
 
 export default function DynamicInputPanel() {
-  const { selectedModel, timeHorizon, setResults, isLoading, setIsLoading, setHasRun } = useSimulation();
+  const { selectedModel, timeHorizon, setTimeHorizon, setResults, isLoading, setIsLoading, setHasRun } = useSimulation();
   const [error, setError] = useState<string | null>(null);
 
   // Compound Interest inputs
@@ -58,6 +59,79 @@ export default function DynamicInputPanel() {
 
   // Volatility Lab inputs
   const [volInitial, setVolInitial] = useState<string>('15');
+
+  const searchParams = useSearchParams();
+  const simId = searchParams.get('sim_id');
+  const hasLoadedRef = useRef(false);
+
+  useEffect(() => {
+    if (simId && !hasLoadedRef.current) {
+      hasLoadedRef.current = true;
+      setIsLoading(true);
+      apiService.getSimulation(Number(simId)).then((sim: any) => {
+        const p = sim.parameters;
+        if (sim.model_type === 'compound-interest') {
+          if (p.principal) setPrincipal(String(p.principal));
+          if (p.annualRate) setInterestRate(String(p.annualRate));
+          if (p.monthlyContribution) setMonthlyContribution(String(p.monthlyContribution));
+          if (p.compoundingFrequency) setCompoundingFrequency(String(p.compoundingFrequency));
+          if (p.inflationRate) setInflationRate(String(p.inflationRate));
+        } else if (sim.model_type === 'discounted-cash-flow') {
+          if (p.initialRevenue) setInitialRevenue(String(p.initialRevenue));
+          if (p.revenueGrowthRate) setRevenueGrowthRate(String(p.revenueGrowthRate));
+          if (p.operatingMargin) setOperatingMargin(String(p.operatingMargin));
+          if (p.taxRate) setTaxRate(String(p.taxRate));
+          if (p.discountRate) setDiscountRate(String(p.discountRate));
+          if (p.terminalGrowthRate) setTerminalGrowthRate(String(p.terminalGrowthRate));
+        } else if (sim.model_type === 'monte-carlo') {
+          if (p.initialRevenue) setMcInitialRevenue(String(p.initialRevenue));
+          if (p.revenueGrowthMean) setMcRevenueGrowthMean(String(p.revenueGrowthMean));
+          if (p.revenueGrowthStd) setMcRevenueGrowthStd(String(p.revenueGrowthStd));
+          if (p.operatingMarginMean) setMcOperatingMarginMean(String(p.operatingMarginMean));
+          if (p.operatingMarginStd) setMcOperatingMarginStd(String(p.operatingMarginStd));
+          if (p.taxRate) setMcTaxRate(String(p.taxRate));
+          if (p.discountRate) setMcDiscountRate(String(p.discountRate));
+          if (p.terminalGrowthRate) setMcTerminalGrowth(String(p.terminalGrowthRate));
+          if (p.numSimulations) setNumSimulations(String(p.numSimulations));
+        } else if (sim.model_type === 'geometric-brownian-motion') {
+          if (p.initialPrice) setGbmInitialPrice(String(p.initialPrice));
+          if (p.drift) setGbmDrift(String(p.drift));
+          if (p.volatility) setGbmVolatility(String(p.volatility));
+          if (p.stepsPerYear) setGbmSteps(String(p.stepsPerYear));
+          if (p.numSimulations) setGbmSimulations(String(p.numSimulations));
+        } else if (sim.model_type === 'portfolio-optimization') {
+          if (p.numAssets) setPortNumAssets(String(p.numAssets));
+          if (p.riskFreeRate) setPortRiskFreeRate(String(p.riskFreeRate));
+          if (p.simulations) setPortSimulations(String(p.simulations));
+        } else if (sim.model_type === 'value-at-risk') {
+          if (p.portfolioValue) setVarPortfolioValue(String(p.portfolioValue));
+          if (p.confidenceLevel) setVarConfidenceLevel(String(p.confidenceLevel));
+          if (p.meanReturn) setVarMeanReturn(String(p.meanReturn));
+          if (p.volatility) setVarVolatility(String(p.volatility));
+        } else if (sim.model_type === 'correlation-matrix') {
+          if (p.numAssets) setCorrNumAssets(String(p.numAssets));
+          if (p.regime) setCorrRegime(String(p.regime));
+        } else if (sim.model_type === 'volatility-lab') {
+          if (p.initialVol) setVolInitial(String(p.initialVol));
+        }
+
+        let th = 5;
+        if (p.years) th = p.years;
+        else if (p.timeHorizonYears) th = p.timeHorizonYears;
+        else if (p.timeHorizonDays) th = p.timeHorizonDays / 252;
+        else if (p.timeSteps) th = p.timeSteps / 252;
+        setTimeHorizon(th);
+        
+        setResults({ ...sim.results, modelType: sim.model_type, id: sim.id });
+        setHasRun(true);
+      }).catch(err => {
+        console.error("Failed to load shared simulation:", err);
+        setError("Could not load shared simulation. The link might be invalid or expired.");
+      }).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [simId, setIsLoading, setResults, setHasRun, setTimeHorizon]);
 
   const handleRunSimulation = async () => {
     setIsLoading(true);
