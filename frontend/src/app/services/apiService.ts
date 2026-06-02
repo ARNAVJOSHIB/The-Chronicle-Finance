@@ -1,7 +1,7 @@
 // API service for connecting to the backend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 
-  (process.env.NODE_ENV === 'production' 
-    ? 'https://the-chronicle-finance.onrender.com/api' 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://the-chronicle-finance.onrender.com'
     : 'http://127.0.0.1:8000/api');
 
 export interface SavedSimulation {
@@ -127,7 +127,7 @@ export const apiService = {
       inflation_rate: data.inflationRate,
       years: data.years
     };
-    
+
     return safeFetch('/calculate-compound-interest', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
