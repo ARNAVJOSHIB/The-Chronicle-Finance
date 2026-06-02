@@ -106,7 +106,7 @@ async function safeFetch(endpoint: string, options: RequestInit = {}) {
     return await response.json();
   } catch (err: any) {
     if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-      throw new Error("Backend server is not running or unreachable. Please ensure the Python server is running on 127.0.0.1:8000.");
+      throw new Error(`Failed to connect to backend at ${API_BASE_URL}. This is usually caused by missing Environment Variables, or a CORS error.`);
     }
     throw err;
   }
