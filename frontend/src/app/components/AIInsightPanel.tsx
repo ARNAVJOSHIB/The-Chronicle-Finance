@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { useSimulation } from '../context/SimulationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 
-  (process.env.NODE_ENV === 'production' 
-    ? 'https://the-chronicle-finance.onrender.com/api' 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://the-chronicle-finance.onrender.com'
     : 'http://127.0.0.1:8000/api');
 
 export default function AIInsightPanel() {
@@ -124,7 +124,7 @@ export default function AIInsightPanel() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                <div 
+                <div
                   className="text-sm font-ui text-ink text-justify md:columns-2 gap-8"
                   style={{ lineHeight: '1.8' }}
                 >
