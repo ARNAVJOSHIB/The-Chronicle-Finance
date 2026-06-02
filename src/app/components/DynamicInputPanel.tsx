@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { apiService, CompoundInterestData, DCFData, MonteCarloData, GBMData } from '../services/apiService';
 import { useSimulation } from '../context/SimulationContext';
 
-export default function DynamicInputPanel() {
+function DynamicInputContent() {
   const { selectedModel, timeHorizon, setTimeHorizon, setResults, isLoading, setIsLoading, setHasRun } = useSimulation();
   const [error, setError] = useState<string | null>(null);
 
@@ -424,5 +424,19 @@ export default function DynamicInputPanel() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function DynamicInputPanel() {
+  return (
+    <Suspense fallback={
+      <div className="w-full mb-10 editorial-panel p-6 md:p-8 bg-parchment shadow-sm flex flex-col items-center justify-center">
+        <div className="font-ui text-[10px] tracking-[0.2em] text-ink/60 font-bold">
+          LOADING PARAMETERS...
+        </div>
+      </div>
+    }>
+      <DynamicInputContent />
+    </Suspense>
   );
 }

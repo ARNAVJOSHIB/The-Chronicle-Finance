@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://thechronicle.finance'),
   title: "Chronicle Finance - Financial Model Simulator",
   description: "Simulate Compound Interest, DCF, and Monte Carlo financial models with AI-powered insights. Premium financial simulation platform.",
   keywords: "financial model, compound interest, DCF, monte carlo, simulation, investment",

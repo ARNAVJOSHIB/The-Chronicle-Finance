@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
-export default function AuthPage() {
+function AuthContent() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -138,5 +138,19 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-parchment flex flex-col items-center justify-center p-4">
+        <div className="font-ui text-[10px] tracking-[0.2em] text-ink/60 font-bold">
+          LOADING GATEWAY...
+        </div>
+      </div>
+    }>
+      <AuthContent />
+    </Suspense>
   )
 }
