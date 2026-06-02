@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSimulation } from '../context/SimulationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
 export default function AIInsightPanel() {
   const { results, hasRun } = useSimulation();
