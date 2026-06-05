@@ -1,8 +1,13 @@
-// API service for connecting to the backend
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
+// Get raw base URL from environment variable or fallback based on environment
+const rawBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ||
   (process.env.NODE_ENV === 'production'
-    ? 'https://the-chronicle-finance.onrender.com/api'
-    : 'http://127.0.0.1:8000/api');
+    ? 'https://the-chronicle-finance.onrender.com'
+    : 'http://127.0.0.1:8000');
+
+// Ensure the URL is properly formatted with /api prefix for the backend router
+export const API_BASE_URL = rawBaseUrl.endsWith('/api') 
+  ? rawBaseUrl 
+  : `${rawBaseUrl.replace(/\/$/, '')}/api`;
 
 export interface SavedSimulation {
   id: number;
