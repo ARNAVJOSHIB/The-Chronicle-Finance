@@ -1,7 +1,7 @@
 // API service for connecting to the backend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
   (process.env.NODE_ENV === 'production'
-    ? 'https://the-chronicle-finance.onrender.com'
+    ? 'https://the-chronicle-finance.onrender.com/api'
     : 'http://127.0.0.1:8000/api');
 
 export interface SavedSimulation {
