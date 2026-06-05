@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSimulation } from '../context/SimulationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { API_BASE_URL } from '../services/apiService';
+import { ENDPOINTS } from '../services/apiService';
 
 export default function AIInsightPanel() {
   const { results, hasRun } = useSimulation();
@@ -19,7 +19,7 @@ export default function AIInsightPanel() {
     setInsight(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/ai-insight`, {
+      const response = await fetch(ENDPOINTS.aiInsight, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

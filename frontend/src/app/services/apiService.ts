@@ -1,13 +1,24 @@
-// Get raw base URL from environment variable or fallback based on environment
-const rawBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ||
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||
   (process.env.NODE_ENV === 'production'
     ? 'https://the-chronicle-finance.onrender.com'
     : 'http://127.0.0.1:8000');
 
-// Ensure the URL is properly formatted with /api prefix for the backend router
-export const API_BASE_URL = rawBaseUrl.endsWith('/api') 
-  ? rawBaseUrl 
-  : `${rawBaseUrl.replace(/\/$/, '')}/api`;
+const BASE = API_URL.replace(/\/$/, '');
+
+export const API_BASE_URL = `${BASE}/api`;
+
+export const ENDPOINTS = {
+  compoundInterest: `${API_BASE_URL}/calculate-compound-interest`,
+  dcf: `${API_BASE_URL}/calculate-dcf`,
+  monteCarlo: `${API_BASE_URL}/run-monte-carlo`,
+  gbm: `${API_BASE_URL}/run-gbm`,
+  portfolioOptimization: `${API_BASE_URL}/portfolio-optimization`,
+  var: `${API_BASE_URL}/calculate-var`,
+  correlation: `${API_BASE_URL}/calculate-correlation`,
+  volatility: `${API_BASE_URL}/analyze-volatility`,
+  aiInsight: `${API_BASE_URL}/ai-insight`,
+  simulations: `${API_BASE_URL}/simulations`,
+};
 
 export interface SavedSimulation {
   id: number;
@@ -102,11 +113,11 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 }
 
 // Helper to handle fetch and provide better error messages for connection issues
-async function safeFetch(endpoint: string, options: RequestInit = {}) {
+async function safeFetch(url: string, options: RequestInit = {}) {
   try {
     const authHeaders = await getAuthHeaders();
     const headers = { ...authHeaders, ...options.headers };
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+    const response = await fetch(url, { ...options, headers });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.detail || `Server error: ${response.status}`);
@@ -114,7 +125,7 @@ async function safeFetch(endpoint: string, options: RequestInit = {}) {
     return await response.json();
   } catch (err: any) {
     if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-      throw new Error(`Failed to connect to backend at ${API_BASE_URL}. This is usually caused by missing Environment Variables, or a CORS error.`);
+      throw new Error(`Failed to connect to backend at ${url}. This is usually caused by missing Environment Variables, or a CORS error.`);
     }
     throw err;
   }
@@ -133,7 +144,7 @@ export const apiService = {
       years: data.years
     };
 
-    return safeFetch('/calculate-compound-interest', {
+    return safeFetch(ENDPOINTS.compoundInterest, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -152,7 +163,7 @@ export const apiService = {
       years: data.years
     };
 
-    return safeFetch('/calculate-dcf', {
+    return safeFetch(ENDPOINTS.dcf, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -174,7 +185,7 @@ export const apiService = {
       years: data.years
     };
 
-    return safeFetch('/run-monte-carlo', {
+    return safeFetch(ENDPOINTS.monteCarlo, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -192,7 +203,7 @@ export const apiService = {
       num_simulations: data.numSimulations
     };
 
-    return safeFetch('/run-gbm', {
+    return safeFetch(ENDPOINTS.gbm, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -201,7 +212,7 @@ export const apiService = {
 
   // Portfolio Optimization
   runPortfolioOptimization: async (data: PortfolioOptData) => {
-    return safeFetch('/portfolio-optimization', {
+    return safeFetch(ENDPOINTS.portfolioOptimization, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -214,7 +225,7 @@ export const apiService = {
 
   // Value at Risk
   calculateVaR: async (data: VaRData) => {
-    return safeFetch('/calculate-var', {
+    return safeFetch(ENDPOINTS.var, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -229,7 +240,7 @@ export const apiService = {
 
   // Correlation Matrix
   calculateCorrelation: async (data: CorrelationData) => {
-    return safeFetch('/calculate-correlation', {
+    return safeFetch(ENDPOINTS.correlation, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -241,7 +252,7 @@ export const apiService = {
 
   // Volatility Modeling
   analyzeVolatility: async (data: VolatilityData) => {
-    return safeFetch('/analyze-volatility', {
+    return safeFetch(ENDPOINTS.volatility, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -253,7 +264,7 @@ export const apiService = {
 
   // Save Simulation
   saveSimulation: async (data: { model_type: string; parameters: any; results: any }) => {
-    return safeFetch('/simulations', {
+    return safeFetch(ENDPOINTS.simulations, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -262,7 +273,7 @@ export const apiService = {
 
   // Save Notes for Simulation
   saveNotes: async (simulationId: number, notes: string) => {
-    return safeFetch(`/simulations/${simulationId}/notes`, {
+    return safeFetch(`${ENDPOINTS.simulations}/${simulationId}/notes`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ notes }),
@@ -271,17 +282,17 @@ export const apiService = {
 
   // Get Simulations
   getSimulations: async (modelType?: string): Promise<SavedSimulation[]> => {
-    const url = modelType ? `/simulations?model_type=${modelType}` : `/simulations`;
+    const url = modelType ? `${ENDPOINTS.simulations}?model_type=${modelType}` : ENDPOINTS.simulations;
     return safeFetch(url);
   },
 
   // Get User Simulations
   getUserSimulations: async (userId: string): Promise<SavedSimulation[]> => {
-    return safeFetch(`/simulations/user/${userId}`);
+    return safeFetch(`${ENDPOINTS.simulations}/user/${userId}`);
   },
 
   // Get Single Simulation
   getSimulation: async (id: number): Promise<SavedSimulation> => {
-    return safeFetch(`/simulations/${id}`);
+    return safeFetch(`${ENDPOINTS.simulations}/${id}`);
   },
 };
