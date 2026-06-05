@@ -21,10 +21,11 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
+ALLOWED_ORIGINS = [
+    "https://the-chronicle-finance.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
 
 # Add CORS Middleware
 app.add_middleware(

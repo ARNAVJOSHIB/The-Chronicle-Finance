@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSimulation } from '../context/SimulationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { ENDPOINTS } from '../services/apiService';
+import { apiService } from '../services/apiService';
 
 export default function AIInsightPanel() {
   const { results, hasRun } = useSimulation();
@@ -19,18 +19,12 @@ export default function AIInsightPanel() {
     setInsight(null);
 
     try {
-      const response = await fetch(ENDPOINTS.aiInsight, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model_type: results.modelType ?? 'financial',
-          model_results: results,
-          simulation_id: results.id,
-          user_notes: results.notes || undefined,
-        }),
+      const data = await apiService.generateAIInsight({
+        model_type: results.modelType ?? 'financial',
+        model_results: results,
+        simulation_id: results.id,
+        user_notes: results.notes || undefined,
       });
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
-      const data = await response.json();
       setInsight(data.insight);
     } catch (err: any) {
       setError(err.message ?? 'Failed to get AI insight.');

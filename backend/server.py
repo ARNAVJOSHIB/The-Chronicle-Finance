@@ -14,10 +14,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
+ALLOWED_ORIGINS = [
+    "https://the-chronicle-finance.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
 
 # Add CORS Middleware
 app.add_middleware(

@@ -7,13 +7,13 @@ const BASE = API_URL.replace(/\/$/, '');
 
 export const API_BASE_URL = `${BASE}/api`;
 
-export const ENDPOINTS = {
+export const API_ENDPOINTS = {
   compoundInterest: `${API_BASE_URL}/calculate-compound-interest`,
   dcf: `${API_BASE_URL}/calculate-dcf`,
   monteCarlo: `${API_BASE_URL}/run-monte-carlo`,
   gbm: `${API_BASE_URL}/run-gbm`,
   portfolioOptimization: `${API_BASE_URL}/portfolio-optimization`,
-  var: `${API_BASE_URL}/calculate-var`,
+  valueAtRisk: `${API_BASE_URL}/calculate-var`,
   correlation: `${API_BASE_URL}/calculate-correlation`,
   volatility: `${API_BASE_URL}/analyze-volatility`,
   aiInsight: `${API_BASE_URL}/ai-insight`,
@@ -112,22 +112,96 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   return { 'Content-Type': 'application/json' }
 }
 
-// Helper to handle fetch and provide better error messages for connection issues
-async function safeFetch(url: string, options: RequestInit = {}) {
-  try {
-    const authHeaders = await getAuthHeaders();
-    const headers = { ...authHeaders, ...options.headers };
-    const response = await fetch(url, { ...options, headers });
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `Server error: ${response.status}`);
+interface ApiOptions extends RequestInit {
+  timeout?: number;
+  retries?: number;
+}
+
+// Production-safe request wrapper with timeout, retry, and JSON handling
+async function apiRequest(endpoint: string, options: ApiOptions = {}): Promise<any> {
+  const { timeout = 15000, retries = 3, ...fetchOptions } = options;
+
+  const authHeaders = await getAuthHeaders();
+  const headers = { 
+    'Content-Type': 'application/json',
+    ...authHeaders, 
+    ...fetchOptions.headers 
+  };
+
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  let attempt = 0;
+  
+  while (attempt <= retries) {
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+
+      if (isDev) {
+        console.log(`[API REQUEST] ${fetchOptions.method || 'GET'} ${endpoint}`);
+        if (fetchOptions.body) console.log(`[API PAYLOAD]`, JSON.parse(fetchOptions.body as string));
+      }
+
+      const response = await fetch(endpoint, {
+        ...fetchOptions,
+        headers,
+        signal: controller.signal
+      });
+
+      clearTimeout(id);
+
+      // Handle 502, 503, 504 errors which indicate Render cold starts or gateway issues
+      if ([502, 503, 504].includes(response.status)) {
+        if (attempt < retries) {
+          if (isDev) console.warn(`[API WARNING] ${response.status} received. Render might be waking up. Retrying... (${attempt + 1}/${retries})`);
+          attempt++;
+          // Exponential backoff: 2s, 4s, 8s
+          await new Promise(res => setTimeout(res, 2000 * Math.pow(2, attempt - 1)));
+          continue;
+        }
+      }
+
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
+
+      if (isDev) {
+        console.log(`[API RESPONSE] Status: ${response.status}`);
+        console.log(`[API BODY]`, data);
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.detail || data?.message || `Server error: ${response.status}`);
+      }
+
+      return data;
+      
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        if (attempt < retries) {
+          if (isDev) console.warn(`[API TIMEOUT] Request timed out. Retrying... (${attempt + 1}/${retries})`);
+          attempt++;
+          continue;
+        }
+        throw new Error('Request timed out. The server took too long to respond.');
+      }
+      
+      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+        if (attempt < retries) {
+          if (isDev) console.warn(`[API NETWORK ERROR] Failed to fetch. Retrying... (${attempt + 1}/${retries})`);
+          attempt++;
+          await new Promise(res => setTimeout(res, 2000 * Math.pow(2, attempt - 1)));
+          continue;
+        }
+        throw new Error(`Failed to connect to backend. Please check your network connection or verify CORS settings.`);
+      }
+
+      throw err;
     }
-    return await response.json();
-  } catch (err: any) {
-    if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-      throw new Error(`Failed to connect to backend at ${url}. This is usually caused by missing Environment Variables, or a CORS error.`);
-    }
-    throw err;
   }
 }
 
@@ -144,9 +218,8 @@ export const apiService = {
       years: data.years
     };
 
-    return safeFetch(ENDPOINTS.compoundInterest, {
+    return apiRequest(API_ENDPOINTS.compoundInterest, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
   },
@@ -163,9 +236,8 @@ export const apiService = {
       years: data.years
     };
 
-    return safeFetch(ENDPOINTS.dcf, {
+    return apiRequest(API_ENDPOINTS.dcf, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
   },
@@ -185,9 +257,8 @@ export const apiService = {
       years: data.years
     };
 
-    return safeFetch(ENDPOINTS.monteCarlo, {
+    return apiRequest(API_ENDPOINTS.monteCarlo, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
   },
@@ -203,18 +274,16 @@ export const apiService = {
       num_simulations: data.numSimulations
     };
 
-    return safeFetch(ENDPOINTS.gbm, {
+    return apiRequest(API_ENDPOINTS.gbm, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
   },
 
   // Portfolio Optimization
   runPortfolioOptimization: async (data: PortfolioOptData) => {
-    return safeFetch(ENDPOINTS.portfolioOptimization, {
+    return apiRequest(API_ENDPOINTS.portfolioOptimization, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         num_assets: data.numAssets,
         risk_free_rate: data.riskFreeRate,
@@ -225,9 +294,8 @@ export const apiService = {
 
   // Value at Risk
   calculateVaR: async (data: VaRData) => {
-    return safeFetch(ENDPOINTS.var, {
+    return apiRequest(API_ENDPOINTS.valueAtRisk, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         portfolio_value: data.portfolioValue,
         confidence_level: data.confidenceLevel,
@@ -240,9 +308,8 @@ export const apiService = {
 
   // Correlation Matrix
   calculateCorrelation: async (data: CorrelationData) => {
-    return safeFetch(ENDPOINTS.correlation, {
+    return apiRequest(API_ENDPOINTS.correlation, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         num_assets: data.numAssets,
         regime: data.regime
@@ -252,9 +319,8 @@ export const apiService = {
 
   // Volatility Modeling
   analyzeVolatility: async (data: VolatilityData) => {
-    return safeFetch(ENDPOINTS.volatility, {
+    return apiRequest(API_ENDPOINTS.volatility, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         initial_vol: data.initialVol,
         time_steps: data.timeSteps
@@ -264,35 +330,41 @@ export const apiService = {
 
   // Save Simulation
   saveSimulation: async (data: { model_type: string; parameters: any; results: any }) => {
-    return safeFetch(ENDPOINTS.simulations, {
+    return apiRequest(API_ENDPOINTS.simulations, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
   },
 
   // Save Notes for Simulation
   saveNotes: async (simulationId: number, notes: string) => {
-    return safeFetch(`${ENDPOINTS.simulations}/${simulationId}/notes`, {
+    return apiRequest(`${API_ENDPOINTS.simulations}/${simulationId}/notes`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ notes }),
+    });
+  },
+
+  // Generate AI Insight
+  generateAIInsight: async (data: { model_type: string; model_results: any; simulation_id?: number; user_notes?: string }) => {
+    return apiRequest(API_ENDPOINTS.aiInsight, {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   },
 
   // Get Simulations
   getSimulations: async (modelType?: string): Promise<SavedSimulation[]> => {
-    const url = modelType ? `${ENDPOINTS.simulations}?model_type=${modelType}` : ENDPOINTS.simulations;
-    return safeFetch(url);
+    const url = modelType ? `${API_ENDPOINTS.simulations}?model_type=${modelType}` : API_ENDPOINTS.simulations;
+    return apiRequest(url);
   },
 
   // Get User Simulations
   getUserSimulations: async (userId: string): Promise<SavedSimulation[]> => {
-    return safeFetch(`${ENDPOINTS.simulations}/user/${userId}`);
+    return apiRequest(`${API_ENDPOINTS.simulations}/user/${userId}`);
   },
 
   // Get Single Simulation
   getSimulation: async (id: number): Promise<SavedSimulation> => {
-    return safeFetch(`${ENDPOINTS.simulations}/${id}`);
+    return apiRequest(`${API_ENDPOINTS.simulations}/${id}`);
   },
 };
