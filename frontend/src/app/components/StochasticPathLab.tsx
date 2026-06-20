@@ -6,7 +6,6 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
   if (!results || !results.paths) return null;
 
   const allPaths = results.paths as number[][];
-  // To maintain performance, limit rendered paths in SVG to 100
   const pathsToRender = allPaths.slice(0, 100);
   const numSteps = pathsToRender[0]?.length || 0;
 
@@ -16,7 +15,6 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
   const h = 500;
   const pad = 60;
 
-  // Compute min/max for scaling (using all paths to ensure bounds are correct)
   let minV = Infinity;
   let maxV = -Infinity;
   for (let i = 0; i < allPaths.length; i++) {
@@ -33,7 +31,6 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
   const scaleX = (idx: number) => pad + (idx / (numSteps - 1)) * (w - pad * 2);
   const scaleY = (val: number) => h - pad - ((val - minV) / (maxV - minV)) * (h - pad * 2);
 
-  // Format Y-axis labels
   const formatY = (n: number) => {
     if (Math.abs(n) >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
     if (Math.abs(n) >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
@@ -42,32 +39,34 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
 
   return (
     <div className="w-full">
-      <div className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2">
+      {/* Header */}
+      <div className="mb-4 px-1 flex items-center justify-between border-b border-rule-strong pb-2">
         <div>
-          <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Quantitative Simulation Lab</p>
-          <h3 className="text-2xl font-black font-playfair text-foreground capitalize">Stochastic Path Cloud</h3>
+          <p className="font-label text-[10px] font-semibold tracking-[0.2em] text-ink-soft uppercase mb-1">Quantitative Simulation Lab</p>
+          <h3 className="font-display text-2xl text-ink">Stochastic Path Cloud</h3>
         </div>
-        <div className="text-[10px] font-inter tracking-widest font-bold  text-dark-charcoal text-right">
+        <div className="font-label text-[10px] tracking-[0.12em] font-semibold text-ink-soft text-right">
           <div>{allPaths.length} Generated Paths</div>
-          <div className="text-dark-charcoal/50">Displaying sample of {pathsToRender.length}</div>
+          <div className="text-ink-soft/60">Displaying sample of {pathsToRender.length}</div>
         </div>
       </div>
-      
-      <div className="border border-black overflow-hidden bg-ivory relative">
+
+      {/* Chart */}
+      <div className="border border-rule overflow-hidden bg-paper-aged relative">
         <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto block" preserveAspectRatio="none">
           {/* Background grid */}
           {[0, 0.25, 0.5, 0.75, 1].map((pct) => (
             <g key={pct}>
-              <line x1={pad} y1={pad + (h - pad * 2) * pct} x2={w - pad} y2={pad + (h - pad * 2) * pct} stroke="rgba(0,0,0,0.05)" strokeWidth={1} />
-              <text x={pad - 10} y={pad + (h - pad * 2) * pct} textAnchor="end" dominantBaseline="middle" fontSize={10} fontFamily="Inter, sans-serif" fill="rgba(0,0,0,0.4)">
+              <line x1={pad} y1={pad + (h - pad * 2) * pct} x2={w - pad} y2={pad + (h - pad * 2) * pct} stroke="var(--rule)" strokeWidth={1} />
+              <text x={pad - 10} y={pad + (h - pad * 2) * pct} textAnchor="end" dominantBaseline="middle" fontSize={10} fontFamily="'Inter', sans-serif" fill="var(--ink-soft)">
                 {formatY(maxV - (maxV - minV) * pct)}
               </text>
             </g>
           ))}
-          
-          <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="#111111" strokeWidth={2} />
-          
-          {/* Paths Cloud */}
+
+          <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="var(--ink)" strokeWidth={2} />
+
+          {/* Paths Cloud — navy with low opacity */}
           <g>
             {pathsToRender.map((p, i) => {
               const d = p.map((val, idx) => `${idx === 0 ? 'M' : 'L'} ${scaleX(idx)} ${scaleY(val)}`).join(' ');
@@ -76,7 +75,7 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
                   key={i}
                   d={d}
                   fill="none"
-                  stroke="rgba(8, 27, 51, 0.15)" /* Deep analytical blue with opacity */
+                  stroke="rgba(24,34,48,0.18)"
                   strokeWidth={1.5}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
@@ -86,12 +85,12 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
             })}
           </g>
 
-          {/* 95% Confidence Interval */}
+          {/* 95% Confidence Interval — gold, very subtle */}
           {results.upper_band && results.lower_band && (
             <motion.path
               d={results.upper_band.map((val: number, idx: number) => `${idx === 0 ? 'M' : 'L'} ${scaleX(idx)} ${scaleY(val)}`).join(' ') + ' ' +
                  results.lower_band.slice().reverse().map((val: number, idx: number) => `L ${scaleX(numSteps - 1 - idx)} ${scaleY(val)}`).join(' ') + ' Z'}
-              fill="rgba(212, 175, 55, 0.1)"
+              fill="rgba(182,155,87,0.08)"
               stroke="none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -99,12 +98,12 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
             />
           )}
 
-          {/* 68% Confidence Interval */}
+          {/* 68% Confidence Interval — gold, slightly stronger */}
           {results.upper_band_68 && results.lower_band_68 && (
             <motion.path
               d={results.upper_band_68.map((val: number, idx: number) => `${idx === 0 ? 'M' : 'L'} ${scaleX(idx)} ${scaleY(val)}`).join(' ') + ' ' +
                  results.lower_band_68.slice().reverse().map((val: number, idx: number) => `L ${scaleX(numSteps - 1 - idx)} ${scaleY(val)}`).join(' ') + ' Z'}
-              fill="rgba(212, 175, 55, 0.25)"
+              fill="rgba(182,155,87,0.2)"
               stroke="none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -112,12 +111,12 @@ export default function StochasticPathLab({ results, timeHorizon }: { results: a
             />
           )}
 
-          {/* Mean Path */}
+          {/* Mean Path — gold accent */}
           {results.mean_path && (
             <motion.path
               d={results.mean_path.map((val: number, idx: number) => `${idx === 0 ? 'M' : 'L'} ${scaleX(idx)} ${scaleY(val)}`).join(' ')}
               fill="none"
-              stroke="#D97706" /* Volatility Amber */
+              stroke="#B69B57"
               strokeWidth={3}
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 1 }}

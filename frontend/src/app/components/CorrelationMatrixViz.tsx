@@ -16,28 +16,30 @@ export default function CorrelationMatrixViz({ results }: { results: any }) {
   const w = padLeft + n * cellW;
   const h = padTop + n * cellH;
 
-  // Color mapping from -1 (Blue) to 0 (White/Gray) to 1 (Red/Gold)
+  /* Color mapping: ink for 1.0, gold for positive, navy for negative */
   const getColor = (val: number) => {
-    if (val === 1) return '#1A1C20'; // perfect correlation
+    if (val === 1) return '#111111';
     if (val > 0) {
       const alpha = val;
-      return `rgba(212, 175, 55, ${alpha})`; // Gold for positive
+      return `rgba(182,155,87,${alpha})`;
     } else {
       const alpha = Math.abs(val);
-      return `rgba(59, 130, 246, ${alpha})`; // Blue for negative
+      return `rgba(24,34,48,${alpha})`;
     }
   };
 
   return (
     <div className="w-full mb-12">
-      <div className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2">
+      {/* Header */}
+      <div className="mb-4 px-1 flex items-center justify-between border-b border-rule-strong pb-2">
         <div>
-          <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Asset Relationships</p>
-          <h3 className="text-2xl font-black font-playfair text-foreground capitalize">Correlation Matrix</h3>
+          <p className="font-label text-[10px] font-semibold tracking-[0.2em] text-ink-soft uppercase mb-1">Asset Relationships</p>
+          <h3 className="font-display text-2xl text-ink">Correlation Matrix</h3>
         </div>
       </div>
 
-      <div className="border border-black bg-ivory p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] overflow-x-auto">
+      {/* Chart — paper bg, soft shadow */}
+      <div className="border border-rule bg-paper p-6 overflow-x-auto" style={{ boxShadow: 'var(--shadow-paper)' }}>
         <svg width={w} height={h} className="block mx-auto">
           {/* Column labels */}
           {assets.map((asset, i) => (
@@ -47,9 +49,9 @@ export default function CorrelationMatrixViz({ results }: { results: any }) {
               y={padTop - 10}
               transform={`rotate(-45 ${padLeft + i * cellW + cellW / 2} ${padTop - 10})`}
               fontSize={10}
-              fontFamily="Inter, sans-serif"
-              fill="#1A1C20"
-              fontWeight="bold"
+              fontFamily="'Inter', sans-serif"
+              fill="var(--ink)"
+              fontWeight="600"
             >
               {asset}
             </text>
@@ -63,16 +65,16 @@ export default function CorrelationMatrixViz({ results }: { results: any }) {
               y={padTop + i * cellH + cellH / 2 + 3}
               textAnchor="end"
               fontSize={10}
-              fontFamily="Inter, sans-serif"
-              fill="#1A1C20"
-              fontWeight="bold"
+              fontFamily="'Inter', sans-serif"
+              fill="var(--ink)"
+              fontWeight="600"
             >
               {asset}
             </text>
           ))}
 
           {/* Matrix cells */}
-          {matrix.map((row, i) => 
+          {matrix.map((row, i) =>
             row.map((val, j) => (
               <g key={`${i}-${j}`}>
                 <motion.rect
@@ -90,8 +92,8 @@ export default function CorrelationMatrixViz({ results }: { results: any }) {
                   y={padTop + i * cellH + cellH / 2 + 3}
                   textAnchor="middle"
                   fontSize={10}
-                  fill={val === 1 || Math.abs(val) > 0.6 ? '#fff' : '#1A1C20'}
-                  fontFamily="Inter, sans-serif"
+                  fill={val === 1 || Math.abs(val) > 0.6 ? '#F8F5EF' : '#111111'}
+                  fontFamily="'Inter', sans-serif"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: (i * n + j) * 0.01 + 0.2 }}

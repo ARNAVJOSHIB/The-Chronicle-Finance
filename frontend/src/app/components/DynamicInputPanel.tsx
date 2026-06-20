@@ -273,16 +273,16 @@ function DynamicInputContent() {
     hint?: string;
   }) => (
     <div className="flex flex-col gap-1 mb-2">
-      <label className="text-[10px] font-bold  tracking-[0.1em] font-ui text-ink">
+      <label className="text-[10px] font-bold  tracking-[0.1em] font-label text-ink">
         {label}
       </label>
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-2 py-1.5 text-sm font-ui text-ink outline-none bg-transparent border-b border-ink/30 transition-all duration-300 focus:border-ledger-gold focus:bg-ledger-gold/5"
+        className="w-full px-2 py-1.5 text-sm font-label text-ink outline-none bg-transparent border-b border-ink/30 transition-all duration-300 focus:border-gold focus:bg-gold/5"
       />
-      {hint && <span className="text-[10px] text-ink/60 font-ui italic">{hint}</span>}
+      {hint && <span className="text-[10px] text-ink/60 font-label italic">{hint}</span>}
     </div>
   );
 
@@ -299,21 +299,21 @@ function DynamicInputContent() {
 
   return (
     <div className="w-full mb-10">
-      <div className="editorial-panel p-6 md:p-8 bg-parchment shadow-[4px_4px_0_rgba(11,19,32,0.05)] transition-all duration-300 hover:shadow-[6px_6px_0_rgba(11,19,32,0.08)] relative overflow-hidden">
+      <div className="editorial-panel p-6 md:p-8 bg-paper-aged shadow-[4px_4px_0_rgba(11,19,32,0.05)] transition-all duration-300 hover:shadow-[6px_6px_0_rgba(11,19,32,0.08)] relative overflow-hidden">
         {/* Subtle noise inside the card for archival feel */}
         <div className="absolute inset-0 bg-gradient-to-br from-parchment/80 to-transparent pointer-events-none" />
         
         {/* Header */}
         <div className="flex items-end justify-between border-b-news-thick border-ink pb-4 mb-8 relative z-10">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.25em] text-steel font-ui mb-1">
+            <p className="text-[10px] font-bold tracking-[0.25em] text-ink-soft font-label mb-1">
               Parameters
             </p>
-            <h2 className="text-2xl font-bold font-heading tracking-tight text-ink capitalize">
+            <h2 className="text-2xl font-bold font-display tracking-tight text-ink capitalize">
               {modelLabel}
             </h2>
           </div>
-          <div className="text-[10px] font-bold font-ui tracking-[0.15em]  text-ink hidden md:block">
+          <div className="text-[10px] font-bold font-label tracking-[0.15em]  text-ink hidden md:block">
             {timeHorizon} YEAR{timeHorizon !== 1 ? 'S' : ''} PROJECTION
           </div>
         </div>
@@ -387,12 +387,12 @@ function DynamicInputContent() {
             <>
               <InputField label="Number of Assets" value={corrNumAssets} onChange={setCorrNumAssets} hint="Matrix dimension" />
               <div className="flex flex-col gap-1 mb-2">
-                <label className="text-[10px] font-bold  tracking-[0.1em] font-ui text-ink">Market Regime</label>
-                <select value={corrRegime} onChange={(e) => setCorrRegime(e.target.value)} className="w-full px-2 py-1 text-sm font-ui text-ink outline-none bg-transparent border-b border-ink/30 focus:border-ledger-gold focus:bg-ledger-gold/5">
+                <label className="text-[10px] font-bold  tracking-[0.1em] font-label text-ink">Market Regime</label>
+                <select value={corrRegime} onChange={(e) => setCorrRegime(e.target.value)} className="w-full px-2 py-1 text-sm font-label text-ink outline-none bg-transparent border-b border-ink/30 focus:border-gold focus:bg-gold/5">
                   <option value="calm">Calm (Low Correlation)</option>
                   <option value="stressed">Stressed (High Correlation)</option>
                 </select>
-                <span className="text-[10px] text-ink/60 font-ui italic">Simulate regime shifts</span>
+                <span className="text-[10px] text-ink/60 font-label italic">Simulate regime shifts</span>
               </div>
             </>
           )}
@@ -405,7 +405,7 @@ function DynamicInputContent() {
         </div>
 
         {error && (
-          <div className="mt-6 p-3 border border-red-900 bg-red-50 text-red-900 text-sm font-ui italic">
+          <div className="mt-6 p-3 border border-red-900 bg-red-50 text-red-900 text-sm font-label italic">
             <strong>Correction:</strong> {error}
           </div>
         )}
@@ -416,7 +416,7 @@ function DynamicInputContent() {
             id="execute-simulation-btn"
             onClick={handleRunSimulation}
             disabled={isLoading}
-            className="editorial-button flex items-center gap-3 px-8 py-3 text-xs font-bold font-ui tracking-[0.15em]  disabled:opacity-50 transition-all duration-500 ease-out focus:outline-none"
+            className="editorial-button flex items-center gap-3 px-8 py-3 text-xs font-bold font-label tracking-[0.15em]  disabled:opacity-50 transition-all duration-500 ease-out focus:outline-none"
           >
             {isLoading ? 'Processing…' : 'Execute Simulation →'}
           </button>
@@ -430,8 +430,8 @@ function DynamicInputContent() {
 export default function DynamicInputPanel() {
   return (
     <Suspense fallback={
-      <div className="w-full mb-10 editorial-panel p-6 md:p-8 bg-parchment shadow-sm flex flex-col items-center justify-center">
-        <div className="font-ui text-[10px] tracking-[0.2em] text-ink/60 font-bold">
+      <div className="w-full mb-10 editorial-panel p-6 md:p-8 bg-paper-aged shadow-sm flex flex-col items-center justify-center">
+        <div className="font-label text-[10px] tracking-[0.2em] text-ink/60 font-bold">
           LOADING PARAMETERS...
         </div>
       </div>

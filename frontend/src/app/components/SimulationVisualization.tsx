@@ -22,10 +22,10 @@ function pct(n: number) { return `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`; }
 
 // ── Layout constants ─────────────────────────────────────────────────────────
 const COLS = 12;
-const CW = 68;   // cell width
-const CH = 76;   // cell height
+const CW = 68;
+const CH = 76;
 const PAD = 36;
-const R = 16;    // node radius
+const R = 16;
 
 // ── Compute per-month interpolated values ────────────────────────────────────
 function buildMonthlyValues(results: any, totalMonths: number): number[] {
@@ -71,7 +71,7 @@ interface NodeData {
   value: number; growthPct: number; x: number; y: number;
 }
 
-// ── Tooltip component ────────────────────────────────────────────────────────
+// ── Tooltip component (paper card style) ───────────────────────────────────────
 function NodeTooltip({ node, results, mx, my }: { node: NodeData; results: any; mx: number; my: number }) {
   const lines: { label: string; value: string; gold?: boolean }[] = [
     { label: 'Month', value: `${node.month} of ${results.timeHorizon ? results.timeHorizon * 12 : 'N/A'}` },
@@ -96,27 +96,21 @@ function NodeTooltip({ node, results, mx, my }: { node: NodeData; results: any; 
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 6 }}
+      initial={{ opacity: 0, scale: 0.95, y: 6 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.88, y: 6 }}
-      transition={{ duration: 0.14 }}
+      exit={{ opacity: 0, scale: 0.95, y: 6 }}
+      transition={{ duration: 0.2 }}
       style={{ position: 'fixed', left, top: my - 10, zIndex: 9999, pointerEvents: 'none' }}
     >
-      <div style={{
-        background: '#1A1C20',
-        border: '1px solid #D4AF37',
-        padding: '12px 16px',
-        minWidth: 190,
-        boxShadow: '4px 4px 0px rgba(0,0,0,1)',
-        fontFamily: 'Inter, sans-serif',
-      }}>
-        <div style={{ color: '#D4AF37', fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', marginBottom: 10, textTransform: '' }}>
+      <div className="bg-paper-aged border border-gold/40 px-4 py-3 min-w-[190px]"
+        style={{ boxShadow: 'var(--shadow-paper)' }}>
+        <div className="font-label text-[8px] font-semibold tracking-[0.15em] text-gold mb-2.5 uppercase">
           {node.isYearEnd ? `✦ Year ${node.year} End` : `Month ${node.month}`}
         </div>
         {lines.map(l => (
-          <div key={l.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 14, marginBottom: 5 }}>
-            <span style={{ color: 'rgba(246,244,240,0.6)', fontSize: 10, textTransform: '', letterSpacing: '0.05em' }}>{l.label}</span>
-            <span style={{ color: l.gold ? '#D4AF37' : '#F6F4F0', fontSize: 11, fontWeight: l.gold ? 700 : 500 }}>{l.value}</span>
+          <div key={l.label} className="flex justify-between gap-3.5 mb-1.5">
+            <span className="font-label text-[9px] tracking-[0.05em] text-ink-soft">{l.label}</span>
+            <span className={`font-body text-[10px] ${l.gold ? 'text-gold font-semibold' : 'text-ink'}`}>{l.value}</span>
           </div>
         ))}
       </div>
@@ -124,7 +118,7 @@ function NodeTooltip({ node, results, mx, my }: { node: NodeData; results: any; 
   );
 }
 
-// ── Results summary card ─────────────────────────────────────────────────────
+// ── Results summary card (paper palette) ──────────────────────────────────────
 function ResultsSummary({ results }: { results: any }) {
   const metrics: { label: string; value: string; highlight?: boolean }[] = [];
   if (results.modelType === 'compound-interest') {
@@ -176,21 +170,19 @@ function ResultsSummary({ results }: { results: any }) {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
       className="w-full max-w-5xl mx-auto px-4 mb-6"
     >
-      <div className="border border-black p-6 bg-[#1A1C20] shadow-[6px_6px_0px_rgba(0,0,0,1)]">
-        <div className="flex items-center gap-3 mb-5 border-b border-white/20 pb-4">
+      <div className="editorial-panel p-6">
+        <div className="flex items-center gap-3 mb-5 border-b border-rule-strong pb-4">
           <div className="w-2 h-6 bg-gold" />
-          <h3 className="text-xl font-black font-playfair text-white tracking-widest capitalize">Simulation Results</h3>
+          <h3 className="font-display text-xl text-ink tracking-wide">Simulation Results</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-x border-t border-white/20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border-x border-t border-rule">
           {metrics.map(({ label, value, highlight }, i) => (
-            <div key={label} className={`p-4 text-center border-b border-white/20 ${i !== 3 ? 'md:border-r border-white/20' : ''}`} style={{
-              background: highlight ? 'rgba(212,175,55,0.1)' : 'transparent',
-            }}>
-              <div className="text-2xl font-black font-playfair mb-1" style={{ color: highlight ? '#D4AF37' : '#F6F4F0' }}>{value}</div>
-              <div className="text-[10px] font-inter  tracking-widest" style={{ color: 'rgba(246,244,240,0.6)' }}>{label}</div>
+            <div key={label} className={`p-4 text-center border-b border-rule ${i !== 3 ? 'md:border-r border-rule' : ''} ${highlight ? 'bg-gold/[0.06]' : ''}`}>
+              <div className={`font-display text-2xl mb-1 ${highlight ? 'text-gold' : 'text-ink'}`}>{value}</div>
+              <div className="font-label text-[9px] tracking-[0.12em] text-ink-soft uppercase">{label}</div>
             </div>
           ))}
         </div>
@@ -244,19 +236,20 @@ export default function SimulationVisualization() {
   const maxValue = Math.max(...monthlyValues, 1);
 
   function nodeColor(n: NodeData) {
-    if (n.isYearEnd) return '#D4AF37';
+    if (n.isYearEnd) return '#B69B57';
     const p = n.value / maxValue;
-    const v = Math.round(180 - p * 120); // Greyscale from 180 to 60
+    /* Paper palette: ink to ink-soft range */
+    const v = Math.round(180 - p * 120);
     return `rgb(${v},${v},${v})`;
   }
 
   if (!hasRun) {
     return (
       <div className="max-w-5xl mx-auto w-full px-4 mb-12">
-        <div className="flex flex-col items-center justify-center py-20 px-8 text-center border border-black bg-transparent">
-          <div className="text-5xl mb-4 font-oldenglish">✧</div>
-          <h3 className="text-xl font-playfair font-bold text-foreground capitalize tracking-widest mb-2">Awaiting Simulation</h3>
-          <p className="text-xs font-ibm italic text-dark-charcoal/70 max-w-sm">
+        <div className="flex flex-col items-center justify-center py-20 px-8 text-center border border-rule bg-paper">
+          <div className="text-4xl mb-4 text-gold">✧</div>
+          <h3 className="font-display text-xl text-ink tracking-wide mb-2">Awaiting Simulation</h3>
+          <p className="font-body text-xs italic text-ink-soft max-w-sm">
             Configure your parameters above and execute. The results will manifest as a temporal infographic charting your financial trajectory.
           </p>
         </div>
@@ -285,26 +278,26 @@ export default function SimulationVisualization() {
         <>
           {/* Network header */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-            className="mb-4 px-1 flex items-center justify-between border-b-news-thick pb-2"
+            className="mb-4 px-1 flex items-center justify-between border-b border-rule-strong pb-2"
           >
             <div>
-              <p className="text-[10px] font-bold  tracking-[0.2em] font-inter text-dark-charcoal mb-1">Temporal Network Graph</p>
-              <h3 className="text-2xl font-black font-playfair text-foreground capitalize">{totalMonths}-Node Infographic</h3>
+              <p className="font-label text-[10px] font-semibold tracking-[0.2em] text-ink-soft uppercase mb-1">Temporal Network Graph</p>
+              <h3 className="font-display text-2xl text-ink">{totalMonths}-Node Infographic</h3>
             </div>
-            <div className="flex gap-5 text-[10px] font-inter tracking-widest font-bold  text-dark-charcoal">
+            <div className="flex gap-5 font-label text-[10px] tracking-[0.12em] font-semibold text-ink-soft">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-black block border border-black" />Monthly
+                <span className="w-2 h-2 bg-ink/30 block border border-ink/40" />Monthly
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-gold block border border-black" />Year-End
+                <span className="w-2 h-2 bg-gold block border border-gold" />Year-End
               </span>
             </div>
           </motion.div>
 
-          {/* SVG Network */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }}
-            className="border border-black overflow-auto bg-surface-muted p-2"
-            style={{ maxHeight: 520, boxShadow: 'inset 0 0 20px rgba(0,0,0,0.05)' }}
+          {/* SVG Network (paper bg) */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }}
+            className="border border-rule overflow-auto bg-paper-aged p-2"
+            style={{ maxHeight: 520, boxShadow: 'var(--shadow-paper)' }}
           >
             <svg
               width="100%"
@@ -316,7 +309,7 @@ export default function SimulationVisualization() {
                 <motion.line
                   key={`e${i}`}
                   x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-                  stroke={a.isYearEnd || b.isYearEnd ? 'rgba(212,175,55,0.8)' : 'rgba(0,0,0,0.15)'}
+                  stroke={a.isYearEnd || b.isYearEnd ? 'rgba(182,155,87,0.6)' : 'rgba(17,17,17,0.1)'}
                   strokeWidth={a.isYearEnd || b.isYearEnd ? 1.5 : 1}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
@@ -333,9 +326,9 @@ export default function SimulationVisualization() {
                     key={`n${i}`}
                     style={{ cursor: 'pointer', transformOrigin: `${n.x}px ${n.y}px` }}
                     initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: 'spring', bounce: 0.45, duration: 0.2 }}
-                    whileHover={{ scale: 1.55 }}
+                    animate={{ scale: isHovered ? 1.15 : 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    whileHover={{ scale: 1.15 }}
                     onMouseEnter={(e) => setHovered({ node: n, mx: e.clientX, my: e.clientY })}
                     onMouseMove={(e) => setHovered(h => h ? { ...h, mx: e.clientX, my: e.clientY } : null)}
                     onMouseLeave={() => setHovered(null)}
@@ -343,19 +336,19 @@ export default function SimulationVisualization() {
                     {/* Outer ring for year-end */}
                     {n.isYearEnd && (
                       <circle cx={n.x} cy={n.y} r={R + 4}
-                        fill="none" stroke="#000" strokeWidth={1} strokeDasharray="2 2" />
+                        fill="none" stroke="var(--ink)" strokeWidth={1} strokeDasharray="2 2" />
                     )}
                     {/* Main node */}
                     <circle cx={n.x} cy={n.y} r={R}
                       fill={color}
-                      stroke="#1A1C20"
+                      stroke="var(--ink)"
                       strokeWidth={n.isYearEnd ? 2 : 1}
                     />
                     {/* Label - only on year-end nodes */}
                     {n.isYearEnd && (
                       <text x={n.x} y={n.y + 0.5}
                         textAnchor="middle" dominantBaseline="middle"
-                        fill="#1A1C20" fontSize={8} fontWeight={800} fontFamily="Inter,sans-serif"
+                        fill="var(--ink)" fontSize={8} fontWeight={600} fontFamily="'Inter', sans-serif"
                       >
                         Y{n.year}
                       </text>

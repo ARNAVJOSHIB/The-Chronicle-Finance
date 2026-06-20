@@ -1,93 +1,147 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import Monogram from './Monogram';
+
+interface NavItem {
+  label: string;
+  path: string;
+}
+
+interface Chapter {
+  numeral: string;
+  title: string;
+  items: NavItem[];
+}
+
+const chapters: Chapter[] = [
+  {
+    numeral: 'I',
+    title: 'Simulation Engine',
+    items: [
+      { label: 'Geometric Brownian Motion', path: '/geometric-brownian-motion' },
+      { label: 'Monte Carlo Laboratory', path: '/monte-carlo' },
+      { label: 'Compound Growth', path: '/compound-interest' },
+    ],
+  },
+  {
+    numeral: 'II',
+    title: 'Risk Intelligence',
+    items: [
+      { label: 'Portfolio Optimization', path: '/portfolio-optimization' },
+      { label: 'Value at Risk', path: '/value-at-risk' },
+      { label: 'Volatility Laboratory', path: '/volatility-lab' },
+      { label: 'Correlation Matrix', path: '/correlation-matrix' },
+    ],
+  },
+  {
+    numeral: 'III',
+    title: 'Valuation',
+    items: [
+      { label: 'Discounted Cash Flow', path: '/discounted-cash-flow' },
+    ],
+  },
+  {
+    numeral: 'IV',
+    title: 'Research',
+    items: [
+      { label: 'Research Notes', path: '/research-notes' },
+      { label: 'Experiments', path: '/experiments' },
+    ],
+  },
+];
 
 export default function Sidebar() {
-  const pillars = [
-    {
-      group: 'I. Simulation Engine',
-      items: [
-        { label: 'Geometric Brownian Motion', path: '/geometric-brownian-motion' },
-        { label: 'Monte Carlo Laboratory', path: '/monte-carlo' },
-        { label: 'Volatility Laboratory', path: '/volatility-lab' },
-      ]
-    },
-    {
-      group: 'II. Risk Intelligence',
-      items: [
-        { label: 'Portfolio Risk Dashboard', path: '/value-at-risk' },
-        { label: 'Stress Testing', path: '/stress-testing' },
-        { label: 'Correlation Intelligence', path: '/correlation-matrix' },
-      ]
-    },
-    {
-      group: 'III. Valuation Systems',
-      items: [
-        { label: 'Discounted Cash Flow', path: '/discounted-cash-flow' },
-        { label: 'Compound Growth', path: '/compound-interest' },
-      ]
-    },
-    {
-      group: 'IV. Market Systems',
-      items: [
-        { label: 'Portfolio Optimization', path: '/portfolio-optimization' },
-      ]
-    }
-  ];
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname === path;
 
   return (
-    <aside className="w-72 flex-shrink-0 border-r border-ink h-full flex flex-col bg-parchment relative z-10 shadow-[4px_0_12px_rgba(11,19,32,0.02)]">
-      {/* Masthead Area */}
-      <div className="pt-10 pb-8 px-8 border-b border-ink">
-        <Link href="/">
-          <h1 className="font-display text-3xl tracking-widest text-ink leading-none hover:opacity-80 transition-opacity cursor-pointer">The Chronicle</h1>
+    <aside className="w-72 flex-shrink-0 h-full flex flex-col bg-paper border-r border-rule relative z-10">
+      {/* ── Masthead Wordmark ─────────────────────────────────────────── */}
+      <div className="pt-8 pb-6 px-6 border-b border-rule-strong">
+        <Link href="/" className="block group">
+          <div className="flex items-center gap-3 mb-3">
+            <Monogram size={28} />
+            <span className="font-masthead text-2xl text-ink leading-none tracking-wide group-hover:opacity-80 transition-opacity duration-600">
+              The Chronicle Finance
+            </span>
+          </div>
+          <div className="h-[2px] bg-gold/30 mb-2" />
+          <p className="font-label text-[8px] font-semibold tracking-[0.35em] text-ink-soft uppercase">
+            Quantitative Laboratory
+          </p>
         </Link>
-        <p className="text-[9px] font-ui tracking-[0.3em] mt-3 font-bold text-ink/50">
-          Quantitative Lab
-        </p>
       </div>
-      
-      {/* Navigation Rail */}
-      <div className="flex-1 overflow-y-auto py-8 no-scrollbar">
-        <nav className="flex flex-col space-y-10 px-4">
-          {pillars.map((pillar) => (
-            <div key={pillar.group} className="px-4">
-              {/* Pillar Header (Tiny Serif Caps, Muted Gold) */}
-              <h3 className="text-[11px] font-heading font-bold tracking-[0.1em] text-ledger-gold/80 mb-4 pb-2 border-b border-ink/20">
-                {pillar.group}
+
+      {/* ── Table of Contents ──────────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto py-6 no-scrollbar">
+        <nav className="flex flex-col space-y-8 px-5">
+          {chapters.map((chapter) => (
+            <div key={chapter.title}>
+              {/* Chapter Header — Playfair Display with gold rule */}
+              <h3 className="font-display text-[12px] font-normal text-ink tracking-wide mb-1">
+                <span className="text-gold mr-2">{chapter.numeral}.</span>
+                {chapter.title.toUpperCase()}
               </h3>
-              
-              {/* Navigation Items (Clean Sans Serif, Spacing, Soft Hover) */}
-              <ul className="space-y-1 relative">
-                {pillar.items.map((item) => (
-                  <li key={item.label}>
-                    <Link 
-                      href={item.path} 
-                      className="group relative flex items-center py-2 px-3 text-[11px] font-ui text-ink/60 transition-all duration-300 hover:text-ink hover:bg-ink/[0.03] rounded-sm"
-                    >
-                      {/* Smooth Left Glow Line */}
-                      <span className="absolute left-0 top-[20%] bottom-[20%] w-[2px] bg-ledger-gold/80 scale-y-0 group-hover:scale-y-100 origin-center transition-transform duration-300 ease-out" />
-                      
-                      {/* Label with animated underline effect */}
-                      <span className="relative z-10 font-medium pl-1 tracking-wide">
-                        {item.label}
-                        <span className="absolute left-1 right-0 bottom-0 h-[1px] bg-ink/20 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-out" />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
+              <div className="h-[1px] bg-rule-strong mb-3" />
+
+              {/* Navigation Items — IBM Plex Serif */}
+              <ul className="space-y-0.5">
+                {chapter.items.map((item) => {
+                  const active = isActive(item.path);
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        href={item.path}
+                        className={`group flex items-center py-1.5 px-3 text-[11px] font-body transition-colors duration-600 ${
+                          active
+                            ? 'text-ink font-semibold bg-gold/[0.06]'
+                            : 'text-ink-soft hover:text-ink hover:bg-ink/[0.02]'
+                        }`}
+                      >
+                        {/* Active gold tick */}
+                        <span
+                          className={`absolute left-0 w-[2px] bg-gold transition-all duration-600 ${
+                            active ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
+                          }`}
+                          style={{
+                            position: 'relative',
+                            width: active ? '6px' : '6px',
+                            height: active ? '6px' : '0px',
+                            backgroundColor: active ? 'var(--gold)' : 'transparent',
+                            borderRadius: '1px',
+                            marginRight: '8px',
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span className="pl-0">{item.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
         </nav>
       </div>
-      
-      {/* Bottom Metadata Area */}
-      <div className="p-6 border-t border-ink bg-parchment">
-        <div className="flex flex-col gap-1 text-[8px] font-ui tracking-[0.2em] text-ink/40 font-bold leading-relaxed">
-          <p>Quantitative Research Edition</p>
-          <p>Issue 06 &middot; Vol. II</p>
-          <p className="text-ledger-gold/70 mt-1">Probabilistic Systems Active</p>
+
+      {/* ── Edition Footer ─────────────────────────────────────────────── */}
+      <div className="p-6 border-t border-rule bg-paper-aged">
+        <div className="flex flex-col gap-1.5">
+          <p className="font-label text-[7px] font-semibold tracking-[0.25em] text-ink-soft uppercase">
+            Quantitative Research Edition
+          </p>
+          <p className="font-label text-[7px] font-semibold tracking-[0.25em] text-ink-soft/50 uppercase">
+            Issue 06 &middot; Vol. II
+          </p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-data-green animate-pulse" />
+            <p className="font-label text-[7px] font-semibold tracking-[0.25em] text-data-green uppercase">
+              Probabilistic Systems Active
+            </p>
+          </div>
         </div>
       </div>
     </aside>

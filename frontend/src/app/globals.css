@@ -1,67 +1,102 @@
-@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+/* ═══════════════════════════════════════════════════════════════════════
+   CHRONICLE FINANCE — Brand Kit Foundation
+
+   Primary Identity:    Luxury Financial Newspaper
+   Secondary Identity:  Quantitative Research Laboratory
+   Tertiary Identity:   Simulation Intelligence Platform
+
+   Typography:
+     Masthead  → UnifrakturMaguntia  (blackletter — wordmark ONLY)
+     Headlines  → Playfair Display     (large, confident, editorial)
+     Body       → IBM Plex Serif       (readable, research-like)
+     Labels     → Inter               (uppercase, wide tracking, institutional)
+
+   Color Palette (exact brand kit values):
+     Paper:     #F8F5EF  warm ivory background
+     Aged:      #F2EEE6  aged paper surfaces
+     Ink:       #111111  primary text
+     Ink-Soft:  #444444  secondary text
+     Gold:      #B69B57  accent
+     Navy:      #182230  deep navy
+   ═══════════════════════════════════════════════════════════════════════ */
+
 @import "tailwindcss";
+
+/* ── Font Assets ──────────────────────────────────────────────────────────── */
+/* Blackletter: only for "The Chronicle Finance" masthead wordmark */
+@import "@fontsource/unifrakturmaguntia/400.css";
+
+/* Headlines: Playfair Display — large, confident, editorial */
 @import "@fontsource/playfair-display/400.css";
 @import "@fontsource/playfair-display/700.css";
 @import "@fontsource/playfair-display/900.css";
+
+/* Body: IBM Plex Serif — readable, research-like */
+@import "@fontsource/ibm-plex-serif/400.css";
+@import "@fontsource/ibm-plex-serif/500.css";
+@import "@fontsource/ibm-plex-serif/600.css";
+
+/* Labels: Inter — institutional, tracked */
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
-@import "@fontsource/ibm-plex-serif/400.css";
-@import "@fontsource/libre-baskerville/400.css";
-@import "@fontsource/source-sans-pro/400.css";
-@import "@fontsource/source-sans-pro/600.css";
 
+/* ── Brand Tokens ──────────────────────────────────────────────────────────── */
 :root {
-  /* The Chronicle Finance Brand Kit */
-  --background: #F5F3EE; /* Parchment */
-  --foreground: #0B1320; /* Ink */
-  
-  --ink: #0B1320;
-  --parchment: #F5F3EE;
-  --steel: #6B7280;
-  --midnight: #1E2A3A;
-  --ledger-gold: #CDAA3D;
-  --data-green: #1FA37A;
-  
-  --surface: #FFFFFF;
-  --surface-muted: #EBE8E3;
-  --border: #0B1320; /* Ink */
-  --border-soft: #6B7280; /* Steel */
+  /* Color Palette */
+  --paper:        #F8F5EF;
+  --paper-aged:   #F2EEE6;
+  --ink:          #111111;
+  --ink-soft:     #444444;
+  --gold:         #B69B57;
+  --navy:         #182230;
+
+  /* Functional (muted, purpose-built — no neon) */
+  --data-red:     #8B3A3A;   /* VaR tail shading only */
+  --data-green:   #2D6A4F;   /* Status "online" indicator */
+  --rule:         rgba(17,17,17,0.14);
+  --rule-strong:  rgba(17,17,17,0.28);
+  --shadow-paper: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+
+  /* Animation (slow, quiet, atmospheric) */
+  --ease-paper: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  --duration-quiet: 600ms;
+  --duration-draw: 2000ms;
 }
 
+/* ── Tailwind v4 Theme Integration ───────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-ink: var(--ink);
-  --color-parchment: var(--parchment);
-  --color-steel: var(--steel);
-  --color-midnight: var(--midnight);
-  --color-ledger-gold: var(--ledger-gold);
-  --color-data-green: var(--data-green);
-  --color-surface: var(--surface);
-  --color-surface-muted: var(--surface-muted);
-  --color-border: var(--border);
-  --color-border-soft: var(--border-soft);
+  /* Colors */
+  --color-paper:        var(--paper);
+  --color-paper-aged:   var(--paper-aged);
+  --color-ink:          var(--ink);
+  --color-ink-soft:     var(--ink-soft);
+  --color-gold:         var(--gold);
+  --color-navy:         var(--navy);
+  --color-rule:         var(--rule);
+  --color-rule-strong:  var(--rule-strong);
+  --color-data-red:     var(--data-red);
+  --color-data-green:   var(--data-green);
 
-  --font-sans: "Inter", ui-sans-serif, sans-serif;
-  --font-mono: ui-monospace, monospace;
-  --font-display: "UnifrakturMaguntia", serif; /* Archive Black equivalent per user request */
-  --font-heading: "Special Elite", monospace; /* Headings */
-  --font-ui: "Inter", ui-sans-serif, sans-serif; /* Editorial Sans equivalent */
-  --font-oldenglish: "UnifrakturMaguntia", serif;
+  /* Fonts */
+  --font-masthead: "UnifrakturMaguntia", serif;
+  --font-display:  "Playfair Display", serif;
+  --font-body:     "IBM Plex Serif", serif;
+  --font-label:    "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:     ui-monospace, monospace;
 }
 
+/* ── Base Layer ────────────────────────────────────────────────────────────── */
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
   }
 
   html {
-    font-family: var(--font-ui);
-    color: var(--foreground);
-    background-color: var(--background);
+    font-family: var(--font-body);
+    color: var(--ink);
+    background-color: var(--paper);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -70,61 +105,57 @@
     margin: 0;
   }
 
+  /* Headlines → Playfair Display (NOT blackletter) */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    color: var(--foreground);
+    color: var(--ink);
     font-weight: normal;
+    line-height: 1.15;
   }
 
   /* ── Font utility classes ── */
-  .font-display    { font-family: var(--font-display); }
-  .font-heading    { font-family: var(--font-heading); }
-  .font-ui         { font-family: var(--font-ui); }
-  .font-mono       { font-family: var(--font-mono); }
+  .font-masthead { font-family: var(--font-masthead); }
+  .font-display  { font-family: var(--font-display); }
+  .font-body     { font-family: var(--font-body); }
+  .font-label    { font-family: var(--font-label); }
+  .font-mono     { font-family: var(--font-mono); }
 
   /* ── Background utilities ── */
-  .bg-ink            { background-color: var(--ink); }
-  .bg-parchment      { background-color: var(--parchment); }
-  .bg-steel          { background-color: var(--steel); }
-  .bg-midnight       { background-color: var(--midnight); }
-  .bg-ledger-gold    { background-color: var(--ledger-gold); }
-  .bg-data-green     { background-color: var(--data-green); }
-  .bg-surface        { background-color: var(--surface); }
-  .bg-surface-muted  { background-color: var(--surface-muted); }
+  .bg-paper       { background-color: var(--paper); }
+  .bg-paper-aged  { background-color: var(--paper-aged); }
+  .bg-navy        { background-color: var(--navy); }
 
   /* ── Text utilities ── */
-  .text-ink            { color: var(--ink); }
-  .text-parchment      { color: var(--parchment); }
-  .text-steel          { color: var(--steel); }
-  .text-midnight       { color: var(--midnight); }
-  .text-ledger-gold    { color: var(--ledger-gold); }
-  .text-data-green     { color: var(--data-green); }
+  .text-ink      { color: var(--ink); }
+  .text-ink-soft { color: var(--ink-soft); }
+  .text-gold     { color: var(--gold); }
+  .text-navy     { color: var(--navy); }
 
   /* ── Editorial Border utilities ── */
-  .border-ink            { border-color: var(--ink); }
-  .border-ledger-gold    { border-color: var(--ledger-gold); }
-  .border-soft           { border-color: var(--border-soft); }
-  .border-news-hairline  { border-color: var(--border); border-width: 1px; }
-  .border-y-news-double  { border-top: 3px double var(--border); border-bottom: 3px double var(--border); }
-  .border-t-news-double  { border-top: 3px double var(--border); }
-  .border-b-news-double  { border-bottom: 3px double var(--border); }
-  .border-news-thick     { border-color: var(--border); border-width: 4px; }
-  .border-t-news-thick   { border-top: 4px solid var(--border); }
-  .border-b-news-thick   { border-bottom: 4px solid var(--border); }
+  .border-rule        { border-color: var(--rule); }
+  .border-rule-strong { border-color: var(--rule-strong); }
+  .border-ink         { border-color: var(--ink); }
+  .border-gold        { border-color: var(--gold); }
+  .border-news-hairline { border-color: var(--rule); border-width: 1px; }
+  .border-y-news-double { border-top: 3px double var(--rule-strong); border-bottom: 3px double var(--rule-strong); }
+  .border-t-news-double { border-top: 3px double var(--rule-strong); }
+  .border-b-news-double { border-bottom: 3px double var(--rule-strong); }
+  .border-t-news-thick  { border-top: 2px solid var(--ink); }
+  .border-b-news-thick  { border-bottom: 2px solid var(--ink); }
 
-  /* ── Ring utilities ── */
-  .focus\:ring-ledger-gold:focus { --tw-ring-color: var(--ledger-gold); }
-  .focus\:border-ledger-gold:focus { border-color: var(--ledger-gold); }
-
-  /* ── Editorial Button effects ── */
+  /* ── Editorial Button ── */
   .editorial-button {
-    background-color: var(--midnight);
-    color: var(--ledger-gold);
-    border: 1px solid var(--midnight);
-    border-radius: 4px;
-    font-family: var(--font-ui);
+    background-color: var(--navy);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    font-family: var(--font-label);
     font-weight: 500;
-    transition: all 0.2s ease;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 10px;
+    transition: all var(--duration-quiet) var(--ease-paper);
+    cursor: pointer;
   }
   .editorial-button:hover:not(:disabled) {
     background-color: var(--ink);
@@ -133,28 +164,40 @@
   .editorial-button:active:not(:disabled) {
     transform: scale(0.98);
   }
-  
+
+  /* ── Editorial Panel ── */
   .editorial-panel {
-    background-color: var(--parchment);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background-color: var(--paper-aged);
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    box-shadow: var(--shadow-paper);
   }
 
+  /* ── Paper Shadow (soft, luxury) ── */
   .editorial-shadow {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), 0 1px 4px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--shadow-paper);
   }
 
+  /* ── Focus utilities ── */
+  .focus\:ring-gold:focus { --tw-ring-color: var(--gold); }
+  .focus\:border-gold:focus { border-color: var(--gold); }
+
+  /* ── Scrollbar suppression ── */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* ── Selection (editorial) ── */
+  ::selection {
+    background-color: var(--gold);
+    color: var(--paper);
+  }
+
+  /* ── Grain Texture (quiet, atmospheric) ── */
   @keyframes grain-drift {
     0%, 100% { transform: translate(0, 0); }
-    10% { transform: translate(-1%, -1%); }
-    20% { transform: translate(-2%, 1%); }
-    30% { transform: translate(1%, -2%); }
-    40% { transform: translate(-1%, 2%); }
-    50% { transform: translate(-2%, 1%); }
-    60% { transform: translate(2%, 0%); }
-    70% { transform: translate(0%, 1%); }
-    80% { transform: translate(1%, 2%); }
-    90% { transform: translate(-1%, 1%); }
+    25% { transform: translate(-1%, 1%); }
+    50% { transform: translate(1%, -1%); }
+    75% { transform: translate(-1%, -1%); }
   }
 
   .bg-texture {
@@ -166,9 +209,35 @@
     width: 200%;
     height: 200%;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.035;
+    opacity: 0.022;
     pointer-events: none;
     z-index: 9999;
-    animation: grain-drift 8s steps(10) infinite;
+    animation: grain-drift 12s steps(8) infinite;
+  }
+
+  /* ── Quiet Fade-In (for cards, sections) ── */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up var(--duration-quiet) var(--ease-paper) forwards;
+  }
+
+  /* ── Reduced Motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .bg-texture { animation: none; opacity: 0.02; }
   }
 }
