@@ -29,6 +29,15 @@ export function median(arr: number[]): number {
   return percentile(arr, 50);
 }
 
+export function medianSorted(sorted: number[]): number {
+  if (sorted.length === 0) return 0;
+  const mid = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 0) {
+    return (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+  return sorted[mid];
+}
+
 /**
  * Percentile via linear interpolation between closest ranks — this is numpy's
  * default ("linear") interpolation method, matching np.percentile exactly.
@@ -57,6 +66,20 @@ export function percentileAxis1(
 ): number[] {
   if (matrix.length === 0) return [];
   return matrix.map((row) => percentile(row, p));
+}
+
+export function percentilesAxis1(matrix: number[][], percentiles: number[]): number[][] {
+  const rows = matrix.length;
+  const cols = matrix[0].length;
+  const result: number[][] = Array.from({ length: percentiles.length }, () => new Array(rows));
+  
+  for (let i = 0; i < rows; i++) {
+    const row = [...matrix[i]].sort((a, b) => a - b);
+    for (let pIdx = 0; pIdx < percentiles.length; pIdx++) {
+      result[pIdx][i] = percentileSorted(row, percentiles[pIdx]);
+    }
+  }
+  return result;
 }
 
 /** Mean per timestep across all simulations. */
