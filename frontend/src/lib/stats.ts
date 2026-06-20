@@ -37,14 +37,17 @@ export function median(arr: number[]): number {
 export function percentile(arr: number[], p: number): number {
   if (arr.length === 0) return 0;
   const sorted = [...arr].sort((a, b) => a - b);
-  if (sorted.length === 1) return sorted[0];
+  return percentileSorted(sorted, p);
+}
 
-  const rank = (p / 100) * (sorted.length - 1);
-  const lo = Math.floor(rank);
-  const hi = Math.ceil(rank);
-  const frac = rank - lo;
-  if (lo === hi) return sorted[lo];
-  return sorted[lo] + (sorted[hi] - sorted[lo]) * frac;
+export function percentileSorted(sorted: number[], p: number): number {
+  if (sorted.length === 0) return 0;
+  const idx = (sorted.length - 1) * (p / 100.0);
+  const lower = Math.floor(idx);
+  const upper = Math.ceil(idx);
+  const weight = idx - lower;
+  if (upper >= sorted.length) return sorted[lower];
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }
 
 /** Percentiles for each timestep — operates on columns of a 2D array. */

@@ -1,6 +1,6 @@
 import type { MonteCarloData, MonteCarloResult } from '../types';
 import { normal, systemRandom } from '../../../lib/prng';
-import { percentile, mean, median } from '../../../lib/stats';
+import { percentileSorted, mean, medianSorted } from '../../../lib/stats';
 
 export function runMonteCarlo(req: MonteCarloData): MonteCarloResult {
   const npv_results: number[] = [];
@@ -46,13 +46,14 @@ export function runMonteCarlo(req: MonteCarloData): MonteCarloResult {
   const percentiles: Record<string, number> = {};
   
   if (npv_results.length > 0) {
+    const sorted = [...npv_results].sort((a, b) => a - b);
     mean_value = mean(npv_results);
-    median_value = median(npv_results);
-    percentiles["5%"] = percentile(npv_results, 5);
-    percentiles["25%"] = percentile(npv_results, 25);
+    median_value = medianSorted(sorted);
+    percentiles["5%"] = percentileSorted(sorted, 5);
+    percentiles["25%"] = percentileSorted(sorted, 25);
     percentiles["50%"] = median_value;
-    percentiles["75%"] = percentile(npv_results, 75);
-    percentiles["95%"] = percentile(npv_results, 95);
+    percentiles["75%"] = percentileSorted(sorted, 75);
+    percentiles["95%"] = percentileSorted(sorted, 95);
   }
 
   return {

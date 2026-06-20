@@ -1,6 +1,6 @@
 import type { GBMData, GBMResult } from '../types';
 import { systemRandom, gaussian } from '../../../lib/prng';
-import { meanAxis1, percentileAxis1, linspace, transpose } from '../../../lib/stats';
+import { meanAxis1, percentilesAxis1, linspace, transpose } from '../../../lib/stats';
 
 export function runGBM(req: GBMData): GBMResult {
   const S0 = req.initialPrice;
@@ -30,10 +30,11 @@ export function runGBM(req: GBMData): GBMResult {
   
   const time_steps = linspace(0, T, N + 1);
   const mean_path = meanAxis1(paths);
-  const upper_band = percentileAxis1(paths, 95);
-  const lower_band = percentileAxis1(paths, 5);
-  const upper_band_68 = percentileAxis1(paths, 84);
-  const lower_band_68 = percentileAxis1(paths, 16);
+  const percentiles = percentilesAxis1(paths, [5, 16, 84, 95]);
+  const lower_band = percentiles[0];
+  const lower_band_68 = percentiles[1];
+  const upper_band_68 = percentiles[2];
+  const upper_band = percentiles[3];
   
   return {
     paths: transpose(paths), // Transposed to [M][N+1] for the client
