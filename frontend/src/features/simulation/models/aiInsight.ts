@@ -1,4 +1,5 @@
 import type { ModelType } from '../types';
+import { getRandomInsight } from './insightData';
 
 export interface AIInsightRequest {
   model_type: ModelType | string;
@@ -12,17 +13,11 @@ export interface AIInsightResponse {
 }
 
 export async function generateAIInsight(req: AIInsightRequest): Promise<AIInsightResponse> {
-  const response = await fetch('/api/ai-insight', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(req),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to generate AI insight`);
-  }
-
-  return response.json();
+  // Simulate a slight delay for realistic UX
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  return {
+    insight: getRandomInsight(req.model_type),
+    generated_at: new Date().toISOString()
+  };
 }
