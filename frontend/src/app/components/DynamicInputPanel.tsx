@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { apiService, CompoundInterestData, DCFData, MonteCarloData, GBMData } from '../services/apiService';
+import { simulationStore } from '@/features/simulation/persistence/simulationStore';
+import { runModel } from '@/features/simulation/engine';
+import type { CompoundInterestData, DCFData, MonteCarloData, GBMData } from '@/features/simulation/types';
 import { useSimulation } from '../context/SimulationContext';
 
 function DynamicInputContent() {
@@ -68,7 +70,7 @@ function DynamicInputContent() {
     if (simId && !hasLoadedRef.current) {
       hasLoadedRef.current = true;
       setIsLoading(true);
-      apiService.getSimulation(Number(simId)).then((sim: any) => {
+      simulationStore.getSimulation(Number(simId)).then((sim: any) => {
         const p = sim.parameters;
         if (sim.model_type === 'compound-interest') {
           if (p.principal) setPrincipal(String(p.principal));
@@ -138,6 +140,8 @@ function DynamicInputContent() {
     setError(null);
 
     try {
+      await new Promise(r => setTimeout(r, 10)); // allow UI to render spinner
+      
       switch (selectedModel) {
         case 'compound-interest': {
           const compoundData: CompoundInterestData = {
@@ -148,8 +152,8 @@ function DynamicInputContent() {
             inflationRate: parseFloat(inflationRate),
             years: timeHorizon,
           };
-          const compoundResult = await apiService.calculateCompoundInterest(compoundData);
-          const saved = await apiService.saveSimulation({
+          const compoundResult = runModel('compound-interest', compoundData);
+          const saved = await simulationStore.saveSimulation({
             model_type: 'compound-interest',
             parameters: compoundData,
             results: compoundResult
@@ -167,8 +171,8 @@ function DynamicInputContent() {
             terminalGrowthRate: parseFloat(terminalGrowthRate),
             years: timeHorizon,
           };
-          const dcfResult = await apiService.calculateDCF(dcfData);
-          const saved = await apiService.saveSimulation({
+          const dcfResult = runModel('discounted-cash-flow', dcfData);
+          const saved = await simulationStore.saveSimulation({
             model_type: 'discounted-cash-flow',
             parameters: dcfData,
             results: dcfResult
@@ -189,8 +193,8 @@ function DynamicInputContent() {
             numSimulations: parseInt(numSimulations),
             years: timeHorizon,
           };
-          const monteCarloResult = await apiService.runMonteCarlo(monteCarloData);
-          const saved = await apiService.saveSimulation({
+          const monteCarloResult = runModel('monte-carlo', monteCarloData);
+          const saved = await simulationStore.saveSimulation({
             model_type: 'monte-carlo',
             parameters: monteCarloData,
             results: monteCarloResult
@@ -199,7 +203,7 @@ function DynamicInputContent() {
           break;
         }
         case 'geometric-brownian-motion': {
-          const gbmData = {
+          const gbmData: GBMData = {
             initialPrice: parseFloat(gbmInitialPrice),
             drift: parseFloat(gbmDrift),
             volatility: parseFloat(gbmVolatility),
@@ -207,15 +211,15 @@ function DynamicInputContent() {
             stepsPerYear: parseInt(gbmSteps),
             numSimulations: parseInt(gbmSimulations),
           };
-          const gbmResult = await apiService.runGBM(gbmData);
-          const saved = await apiService.saveSimulation({ model_type: 'geometric-brownian-motion', parameters: gbmData, results: gbmResult });
+          const gbmResult = runModel('geometric-brownian-motion', gbmData);
+          const saved = await simulationStore.saveSimulation({ model_type: 'geometric-brownian-motion', parameters: gbmData, results: gbmResult });
           setResults({ ...gbmResult, modelType: 'geometric-brownian-motion', id: saved.id });
           break;
         }
         case 'portfolio-optimization': {
           const portData = { numAssets: parseInt(portNumAssets), riskFreeRate: parseFloat(portRiskFreeRate), simulations: parseInt(portSimulations) };
-          const portResult = await apiService.runPortfolioOptimization(portData);
-          const saved = await apiService.saveSimulation({ model_type: 'portfolio-optimization', parameters: portData, results: portResult });
+          const portResult = runModel('portfolio-optimization', portData);
+          const saved = await simulationStore.saveSimulation({ model_type: 'portfolio-optimization', parameters: portData, results: portResult });
           setResults({ ...portResult, modelType: 'portfolio-optimization', id: saved.id });
           break;
         }
@@ -227,15 +231,15 @@ function DynamicInputContent() {
             volatility: parseFloat(varVolatility), 
             timeHorizonDays: timeHorizon * 252 
           };
-          const varResult = await apiService.calculateVaR(varData);
-          const saved = await apiService.saveSimulation({ model_type: 'value-at-risk', parameters: varData, results: varResult });
+          const varResult = runModel('value-at-risk', varData);
+          const saved = await simulationStore.saveSimulation({ model_type: 'value-at-risk', parameters: varData, results: varResult });
           setResults({ ...varResult, modelType: 'value-at-risk', id: saved.id });
           break;
         }
         case 'correlation-matrix': {
           const corrData = { numAssets: parseInt(corrNumAssets), regime: corrRegime };
-          const corrResult = await apiService.calculateCorrelation(corrData);
-          const saved = await apiService.saveSimulation({ model_type: 'correlation-matrix', parameters: corrData, results: corrResult });
+          const corrResult = runModel('correlation-matrix', corrData);
+          const saved = await simulationStore.saveSimulation({ model_type: 'correlation-matrix', parameters: corrData, results: corrResult });
           setResults({ ...corrResult, modelType: 'correlation-matrix', id: saved.id });
           break;
         }
@@ -244,8 +248,8 @@ function DynamicInputContent() {
             initialVol: parseFloat(volInitial), 
             timeSteps: timeHorizon * 252 
           };
-          const volResult = await apiService.analyzeVolatility(volData);
-          const saved = await apiService.saveSimulation({ model_type: 'volatility-lab', parameters: volData, results: volResult });
+          const volResult = runModel('volatility-lab', volData);
+          const saved = await simulationStore.saveSimulation({ model_type: 'volatility-lab', parameters: volData, results: volResult });
           setResults({ ...volResult, modelType: 'volatility-lab', id: saved.id });
           break;
         }

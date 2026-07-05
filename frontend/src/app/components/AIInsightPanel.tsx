@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSimulation } from '../context/SimulationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { apiService } from '../services/apiService';
+import { generateAIInsight } from '@/features/simulation/models/aiInsight';
 
 export default function AIInsightPanel() {
   const { results, hasRun } = useSimulation();
@@ -19,10 +19,9 @@ export default function AIInsightPanel() {
     setInsight(null);
 
     try {
-      const data = await apiService.generateAIInsight({
+      const data = await generateAIInsight({
         model_type: results.modelType ?? 'financial',
         model_results: results,
-        simulation_id: results.id,
         user_notes: results.notes || undefined,
       });
       setInsight(data.insight);
@@ -41,7 +40,7 @@ export default function AIInsightPanel() {
         <div className="px-6 py-4 flex items-center justify-between border-b border-rule-strong">
           <div>
             <p className="text-[10px] font-semibold tracking-[0.25em] font-label text-ink-soft mb-1 uppercase">
-              Powered by Groq
+              Chronicle Analytics
             </p>
             <h3 className="text-2xl font-display text-ink tracking-tight">
               Editorial Insight

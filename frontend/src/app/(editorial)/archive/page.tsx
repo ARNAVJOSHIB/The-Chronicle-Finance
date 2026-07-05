@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/app/context/AuthContext'
-import { apiService, SavedSimulation } from '@/app/services/apiService'
+import { simulationStore } from '@/features/simulation/persistence/simulationStore'
+import type { SavedSimulation } from '@/features/simulation/types'
 import Link from 'next/link'
 
 export default function ArchivePage() {
@@ -14,7 +15,7 @@ export default function ArchivePage() {
     if (user) {
       const fetchSims = async () => {
         try {
-          const data = await apiService.getUserSimulations(user.id)
+          const data = await simulationStore.getUserSimulations(user.id)
           setSimulations(data)
         } catch (err) {
           console.error(err)

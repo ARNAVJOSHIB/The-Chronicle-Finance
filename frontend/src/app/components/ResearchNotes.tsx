@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSimulation } from '../context/SimulationContext';
-import { apiService } from '../services/apiService';
+import { simulationStore } from '@/features/simulation/persistence/simulationStore';
 
 export default function ResearchNotes() {
   const [note, setNote] = useState('');
@@ -34,7 +34,7 @@ export default function ResearchNotes() {
     const allNotesText = newNotes.map(n => `[${n.date}] ${n.content}`).join('\n');
 
     try {
-      await apiService.saveNotes(results.id, allNotesText);
+      await simulationStore.saveNotes(results.id, allNotesText);
       setResults({ ...results, notes: allNotesText });
     } catch (err) {
       console.error("Failed to save notes to backend:", err);
